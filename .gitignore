@@ -5,3 +5,8 @@
 *.log
 *.xml
 *.apk
+*WebServer/
+*flamingo/
+*Skill-Tree/
+*Paper-Code/
+*TKeed/
