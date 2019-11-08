@@ -103,9 +103,9 @@ int main(int argc, char **argv)
 			char post_buf[30];
 
 			if (events & EPOLLERR || events & EPOLLHUP || (!events & EPOLLIN)){
-		printf("epoll has error");
-		close(event[i].data.fd);
-		continue;
+				printf("epoll has error");
+				close(event[i].data.fd);
+				continue;
 			}else if(listenfd == event[i].data.fd){
 				while (1){
 					struct sockaddr_in inAddr;
@@ -116,7 +116,6 @@ int main(int argc, char **argv)
 						break;
 					}
 					printf("new connection: host = %s, port = %s\n", inAddr.sin_addr.s_addr, inAddr.sin_port);
-
 					ev.data.fd = accpFd;
 					ev.events = EPOLLIN | EPOLLET;
 					ret = epoll_ctl(epfd, EPOLL_CTL_ADD, accpFd, &ev);
@@ -136,7 +135,7 @@ int main(int argc, char **argv)
 							done = 1;
 						}
 						break;
-					}else if (!ret_len){
+					}else if (0 == ret_len){
 						done = 1;
 						break;
 					}
