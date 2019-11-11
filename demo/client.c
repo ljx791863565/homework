@@ -50,6 +50,7 @@ int main(int argc, char **argv)
 	ret = connect(sockfd, (struct sockaddr*)&cliAddr, sizeof(cliAddr));
 	if (ret < 0){
 		perror("connect");
+		close(sockfd);
 		return -1;
 	}
 	printf("client %s connect suss, port = %d\n", argv[1], atoi(argv[2]));

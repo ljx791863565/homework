@@ -30,6 +30,6 @@ typedef struct pool
 
 int pool_add_worker(void *(*process)(void *arg), void *arg);
 void *thread_routine(void *arg);
-
+void pool_init(int max_thread_num);
 extern CThread_pool *pool;
 #endif
