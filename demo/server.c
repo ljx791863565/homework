@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <error.h>
+#include <errno.h>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	struct sockaddr_in cliAddr;
 	cliAddr.sin_family = AF_INET;
 	cliAddr.sin_port = htons(atoi(argv[1]));
-	cliAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+	cliAddr.sin_addr.s_addr = inet_addr("192.168.1.172");
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0){
@@ -89,5 +89,6 @@ int main(int argc, char **argv)
 		printf("server recv:%s\n", buf);
 	}
 	pthread_join(pid, NULL);
-	return -1;
+	return 0;
+}
 

@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <error.h>
+#include <errno.h>
 
 #include <sys/socket.h>
 #include <arpa/inet.h>
@@ -75,5 +75,5 @@ int main(int argc, char **argv)
 		printf("client %d :%s\n",inet_addr(argv[1]), buf);
 	}
 	pthread_join(pid, NULL);
-	return -1;
+	return 0;
 }
