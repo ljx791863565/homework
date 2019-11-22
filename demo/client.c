@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <pthread.h>
 
-#define MAX_BUFF 1024
+#define MAX_BUFF 1024			//update 2019.11.21
 
 void* handler(void *arg)
 {
