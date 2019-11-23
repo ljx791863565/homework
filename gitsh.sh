@@ -1,6 +1,7 @@
 #!/bin/bash
 
-git add . && 
-git commit $-m $"$date" 
+DATE=`data`
+git add --all 
+git commit -m "$DATE at home" 
 
 
