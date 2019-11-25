@@ -69,9 +69,9 @@ int getWeekDay(int year, int month, int day)
 	return weekday;
 }
 
-void showMonth(int year, int month, int day)
+void showMonth(int year, int month)
 {
-	int week = getWeekDay(year, month, day);
+	int week = getWeekDay(year, month, 1);
 	int i, j;
 
 	printf("%d年%d月\n\n",year, month);
@@ -90,6 +90,7 @@ void showMonth(int year, int month, int day)
 
 }
 
+/*
 void showYear(year, month, day)
 {
 	int i, j;
@@ -97,3 +98,4 @@ void showYear(year, month, day)
 		
 	}
 }
+*/

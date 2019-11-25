@@ -16,6 +16,6 @@ int main(int argc, char *argv[])
 */	
 //	int week = getWeekDay(year, month, day);
 //	printf("week = %d\n", week);
-	showMonth(year, month, day);
+	showMonth(year, month);
 	return 0;;
 }
