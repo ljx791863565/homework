@@ -6,16 +6,22 @@ int main(int argc, char *argv[])
 	printf("请输入年月 \n");
 	int year, month, day;
 	scanf("%d %d %d", &year, &month, &day);
-
-/*	
-	if (isLeapYear(year) < 0){
-		printf("%d not a leappyear\n", year);
-	}else{
-		printf("%d is a  leapyear\n", year);
+	if (isYear(year) < 0){
+		printf("输入年错误\n");
+		return -1;
 	}
-*/	
-//	int week = getWeekDay(year, month, day);
-//	printf("week = %d\n", week);
+	if (isMonth(month) < 0){
+		printf("输入月错误\n");
+		return -1;
+	}
+	if (isDay(year, month, day) < 0){
+		printf("输入日错误\n");
+		return -1;
+	}
+
+	
 	showMonth(year, month);
+	showDayInMonth(year, month, day);
+	showYear(year, month, day);
 	return 0;;
 }
