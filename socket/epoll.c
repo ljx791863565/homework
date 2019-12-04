@@ -46,7 +46,7 @@ int main(int argc, char **argv)
 	int listenfd;
 	int epfd; 
 	struct sockaddr_in cliAddr;
-	const char * const local_addr = "127.0.0.1";
+	const char * const local_addr = "192.168.1.8";
 	cliAddr.sin_family = AF_INET;
 	cliAddr.sin_port = htons(atoi(argv[1]));
 	cliAddr.sin_addr.s_addr = inet_addr(local_addr);

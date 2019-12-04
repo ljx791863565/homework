@@ -1,0 +1,32 @@
+{
+	"cmd1":
+	{
+		"status": "",
+		"gw": "",
+		"dns": "",
+		"dns2": "",
+		"ontime": "",
+		"ip": "192.168.1.1",
+		"mask": "255.255.255.0",
+		"port_1": "0",
+		"port_2": "0",
+		"wifi_mode": "ap",
+		"wifi_signal": "",
+		"link":
+		{
+			"name": "Quectel EC20F",
+			"imei": "862815035089497",
+			"imsi": "",
+			"mnc": "",
+			"creg": "0",
+			"sim": "NO SIM",
+			"signal": "-0",
+			"nettype": "",
+			"operatoe":
+			{
+				"name" :"未知运营商",
+			}
+		}
+	}
+}
+
