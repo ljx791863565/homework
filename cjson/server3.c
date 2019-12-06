@@ -61,7 +61,7 @@ void *replyReboot(void *arg)
 }
 int main(int argc, char **argv)
 {
-	if (argc > 2){
+	if (argc > 3){
 		printf("argc number error\n");
 		return -1;
 	}
@@ -71,8 +71,8 @@ int main(int argc, char **argv)
 	int ret = 0;
 	struct sockaddr_in cliAddr;
 	cliAddr.sin_family = AF_INET;
-	cliAddr.sin_port = htons(atoi(argv[1]));
-	cliAddr.sin_addr.s_addr = inet_addr("192.168.1.1");
+	cliAddr.sin_port = htons(atoi(argv[2]));
+	cliAddr.sin_addr.s_addr = inet_addr(argv[1]);
 
 	sockfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (sockfd < 0){
