@@ -17,6 +17,7 @@
 void *replyStatus(void *arg)
 {
 	int fd = *(int *)arg;
+	system("/usr/sbin/4ginfo_json.sh 2> /dev/null");
 	FILE *fp = fopen("/tmp/info", "r");
 	if (fp == NULL){
 		perror("fopen");
@@ -38,20 +39,11 @@ void *replyStatus(void *arg)
 
 void *replyReboot(void *arg)
 {
-	int fd = *(int *)arg;
-	FILE *fp = fopen("/tmp/op", "r");
-	if (fp == NULL){
-		perror("fopen");
-		return;
-	}
-	char buf[MAX_BUFF];
-	memset(buf, 0, sizeof(buf));
-	int ret = fread(buf, sizeof(buf), 1, fp);
-	if (ret < 0){
-		perror("fread");
-		return;
-	}
-	ret = write(fd, buf, sizeof(buf));
+	int fd = *(int*)arg;
+	char buff[1024];
+	memset(buff, 0, sizeof(buff));
+	strcpy(buff, "{{\"true\"}}");
+	int ret = write(fd, buff, sizeof(buff));
 	if (ret < 0){
 		perror("write");
 		return;
@@ -79,7 +71,8 @@ int main(int argc, char **argv)
 		perror("socket");
 		return -1;
 	}
-
+	int option = 1;
+	setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, (const char *)&option, sizeof(option));
 	ret = bind(sockfd, (struct sockaddr*)&cliAddr, sizeof(cliAddr));
 	if (ret < 0){
 		perror("bind");
@@ -129,6 +122,8 @@ int main(int argc, char **argv)
 				perror("pthread_create");
 				return -1;
 			}
+		}else {
+			
 		}
 		printf("server recv:%s\n", buf);
 		cJSON_Delete(json);
