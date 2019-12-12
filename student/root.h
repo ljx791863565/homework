@@ -7,4 +7,5 @@ typedef struct Root{
 }Root;
 
 extern void RootLogin();
+extern void RootOption();
 #endif

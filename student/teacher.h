@@ -10,10 +10,11 @@ typedef struct TeacherInfo
 	char subject[20];
 	char passwd[20];
 	char email[50];
-}TeacheInfo;
+}TeacherInfo;
 
 extern SaveTeacherInfo(struct TeacherInfo *s);
 extern TeacherInfo* LoadTeacherInfo(char *id);
 extern void TeacherRegister();
 extern void TeacherLogin();
+extern void TeacherOption();
 #endif

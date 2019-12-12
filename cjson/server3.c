@@ -87,49 +87,51 @@ int main(int argc, char **argv)
 
 	struct sockaddr_in serAddr;
 	socklen_t len = sizeof(serAddr);
-	int newFd = accept(sockfd, (struct sockaddr*)&serAddr, &len);
-	if (newFd < 0){
-		perror("accept");
-		return -1;
-	}
-	pthread_t pid1, pid2;
 	while (1){
-		memset(buf, 0, sizeof(buf));
-		ret = read(newFd, buf, sizeof(buf));
-		if (ret < 0){
-			perror("read");
+		int newFd = accept(sockfd, (struct sockaddr*)&serAddr, &len);
+		if (newFd < 0){
+			perror("accept");
 			return -1;
 		}
-		cJSON *json;
-		json = cJSON_Parse(buf);
-		if (json == NULL){
-			cJSON_Delete(json);
-			return NULL;
-		}
-		cJSON *json_cmd1 = cJSON_GetObjectItem(json, "cmd1");
-		cJSON *cmd1_com = cJSON_GetObjectItem(json_cmd1, "com");
-		cJSON *cmd1_op = cJSON_GetObjectItem(json_cmd1, "op");
+		pthread_t pid1, pid2;
+		while (1){
+			memset(buf, 0, sizeof(buf));
+			ret = read(newFd, buf, sizeof(buf));
+			if (ret < 0){
+				perror("read");
+				return -1;
+			}
+			cJSON *json;
+			json = cJSON_Parse(buf);
+			if (json == NULL){
+				cJSON_Delete(json);
+				return NULL;
+			}
+			cJSON *json_cmd1 = cJSON_GetObjectItem(json, "cmd1");
+			cJSON *cmd1_com = cJSON_GetObjectItem(json_cmd1, "com");
+			cJSON *cmd1_op = cJSON_GetObjectItem(json_cmd1, "op");
 
-		if (!strcmp(cmd1_op->valuestring, "status")){
-			pthread_create(&pid1, NULL, replyStatus, &newFd);
-			if (pid1 < 0){
-				perror("pthread_create");
-				return -1;
+			if (!strcmp(cmd1_op->valuestring, "status")){
+				pthread_create(&pid1, NULL, replyStatus, &newFd);
+				if (pid1 < 0){
+					perror("pthread_create");
+					return -1;
+				}
+			}else if (!strcmp(cmd1_op->valuestring, "reboot")){
+				pthread_create(&pid2, NULL, replyReboot, &newFd);
+				if (pid2 < 0){
+					perror("pthread_create");
+					return -1;
+				}
+			}else {
+
 			}
-		}else if (!strcmp(cmd1_op->valuestring, "reboot")){
-			pthread_create(&pid2, NULL, replyReboot, &newFd);
-			if (pid2 < 0){
-				perror("pthread_create");
-				return -1;
-			}
-		}else {
-			
+			printf("server recv:%s\n", buf);
+			cJSON_Delete(json);
 		}
-		printf("server recv:%s\n", buf);
-		cJSON_Delete(json);
+		pthread_join(pid1, NULL);
+		pthread_join(pid2, NULL);
+		return 0;
 	}
-	pthread_join(pid1, NULL);
-	pthread_join(pid2, NULL);
-	return 0;
 }
 
