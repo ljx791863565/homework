@@ -1,7 +1,1 @@
-{
-	"cmd1":
-	{
-		"com" : "ifname/lte",
-		"op" : "status"
-	}
-}
+1
