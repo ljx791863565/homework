@@ -315,3 +315,182 @@ string Sub(const string &left, const string &right)
 	}
 }
 
+BigNum operator*(const BigNum &left, const BigNum &right)
+{
+	//1.左右操作数均未溢出
+	if (!left.IsINT64Overflow() && !right.IsINT64Overflow()){
+		if (INT_64_MAX/llabs(left._value) >= llabs(right._value)){
+			return BigNum(left._value * right._value);
+		}
+	}
+
+	//2.左右操作数有一个溢出或两个都溢出
+	return BigNum(Mul(left._strData, right._strData).c_str());
+}
+
+string Mul(const string &left, const string &right)
+{
+	char *Left = (char *)left.c_str();
+	char *Right = (char *)right.c_str();
+
+	int LSize = strlen(Left);
+	int RSize = strlen(Right);
+
+	char symbol = '+';
+	if (*Left != *Right){
+		symbol = '-';
+	}
+
+	if (LSize > RSize){
+		swap(LSize, RSize);
+		swap(Left, Right);
+	}
+
+	BigNum ret("");
+	int i, j, k;
+	//i控制长度更短的数作为被乘数，需要做i次加法，每次为i的以个位数和整个乘数相乘的值
+	for (i = 1; i < LSize; i++){
+		int carry = 0;
+		int l = Left[LSize - i] - '0';
+		string tmp;
+		tmp.resize(RSize, '0');		//每一位和乘数相乘最大为多一位，所以更长的乘数的长度刚好可以容纳下（包括符号位一位的占位， 值不带符号）
+
+		//j控制乘数的数量，即被乘数中的一个位要与j个位分别相乘
+		char *ptmp =(char *)tmp.c_str();
+		for (j = 1; j< RSize; j++){
+			int mul = l * (Right[RSize] - i) + carry;
+			carry = mul / 10;	//需要进位的数
+			mul %= 10;			//余数为这个位的最终值
+			ptmp[RSize - j] = mul + '0';	//保存在ptmp中
+		}
+		//做完了后如果要进位，需要表示在最左边一位
+		ptmp[0] = carry + '0';
+
+		//最后值的扩容
+		//最后值的位数为最大长度的数的位数和更短位数的长度的叠加
+		//每次i-1位，共i次
+		for (k = 1; k < i; k++){
+			tmp.append(1, '0');
+		}
+
+		BigNum tmp_right(tmp.c_str());
+		ret = ret + tmp_right;		//将乘法转换成加法
+	}	
+	string rs = ret._strData;
+	*(char *)(rs.c_str()) = symbol;
+
+	return rs;
+}
+
+// left/right    right!=0
+BigNum operator/(const BigNum &left, const BigNum &right)
+{	
+	if (!left.IsINT64Overflow() && !right.IsINT64Overflow()){
+		if (0 == right._value)
+			throw 0;
+		return BigNum(left._value / right._value);
+	}
+
+	return BigNum(Div(left._strData, right._strData).c_str());
+}
+
+bool isLeftBig(const char *left, int lSize, const char *right, int rSize)
+{
+	if (lSize > rSize)
+		return true;
+	if ((lSize == rSize) && (strncmp(left, right, lSize) >= 0))
+		return true;
+
+	return false;
+}
+
+char SubLoop(char *left, int lSize, const char *right, int rSize)
+{
+	char cnt = '0';
+	string rs;
+	rs.resize(lSize, '0');
+
+	char *dst = (char *)rs.c_str();
+	int sub;
+	int carry = 0;
+	int i;
+	while (isLeftBig(left, lSize, right, rSize)){
+
+		for (i = 1; i <=lSize; i++){
+			left[lSize -i] -= carry;
+			if (i <= rSize)
+				sub = left[lSize - i] - right[rSize - i];
+			else
+				sub = left[lSize -i] - '0';
+
+			if (sub < 0){
+				if (i < lSize){
+
+					carry = 1;
+					sub += 10;
+				}else{
+
+					sub = 0 - sub;
+				}
+			}else {
+				carry = 0;
+			}
+			dst[lSize - i] = sub + '0';
+		}
+		int index = 0;
+		while (index < lSize){
+			left[index] = dst[index];
+			++index;
+		}
+		while ('0' == *left){
+			++left;
+			--lSize;
+		}
+		++cnt;
+	}
+	return cnt;
+}
+string Div(const string &left, const string &right)
+{
+	BigNum rs("");
+	string new_left(left);
+	char *Left = (char *)new_left.c_str();
+	char *Right = (char *)right.c_str();
+
+	int RSize = strlen(Right);
+	int LSize = strlen(Left);
+	char symbol = '+';
+	if (*Left != *Right)
+		symbol = '-';
+
+	++Left;
+	++Right;
+
+	int Datalen = RSize - 1;
+	int offset = 0;
+	
+	while (isLeftBig(Left, LSize, Right, RSize)){
+		if (isLeftBig(Left, Datalen, Right, RSize)){
+			string tmp;
+			tmp.resize(LSize, '0');
+			char *t = (char *)tmp.c_str();
+
+			t[Datalen -1] = SubLoop(Left, Datalen, Right, RSize);
+			rs = rs + BigNum(t);
+
+			BigNum tmp_big(Left);
+			new_left = tmp_big._strData;
+			Left = (char *)new_left.c_str();
+			++Left;
+		}else{
+			Datalen++;
+		}
+
+		++offset;
+	}
+	BigNum ret(rs._strData.c_str());
+	char *sym = (char *)ret._strData.c_str();
+	*sym = symbol;
+	
+	return ret._strData;
+}

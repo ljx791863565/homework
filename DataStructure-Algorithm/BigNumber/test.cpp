@@ -11,7 +11,7 @@ int main()
 {
 
 	//BigNum b1("8329487777777777742836842777777");
-	BigNum b1("7");
+	BigNum b1("1234");
 	cout << b1 << endl;
 
 	/*
@@ -46,8 +46,13 @@ int main()
 
 	BigNum a1("99999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999");
 	cout << a1 << endl;
-	BigNum a2 = a1 + b1;
+	BigNum a("12345678");
+	cout << a << endl;
+	BigNum a2 = a * b1;
 	cout << a2 << endl;
+
+	BigNum a3 = a / b1;
+	cout << a3 << endl;
 /*
 	BigNum a3("         88388777777777777777777777777");
 	cout << a3 << endl;
