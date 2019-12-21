@@ -1,0 +1,30 @@
+if &compatible
+  set nocompatible
+end
+
+filetype off
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+" Let Vundle manage Vundle
+Bundle 'gmarik/vundle'
+
+" Define bundles via Github repos
+Bundle 'git://github.com/Valloric/YouCompleteMe.git'
+Bundle 'git://github.com/majutsushi/tagbar.git'
+Bundle 'git://github.com/scrooloose/syntastic.git'
+Bundle 'git://github.com/tpope/vim-bundler.git'
+Bundle 'git://github.com/vim-scripts/ctags.vim.git'
+Bundle 'git://github.com/vim-scripts/tComment.git'
+Bundle "git://github.com/mattn/emmet-vim.git"
+Bundle "git://github.com/scrooloose/nerdtree.git"
+Bundle "git://github.com/godlygeek/tabular.git"
+Bundle "git://github.com/msanders/snipmate.vim.git"
+Bundle "git://github.com/Raimondi/delimitMate.git"
+Bundle "git://github.com/Lokaltog/vim-easymotion.git"
+
+if filereadable(expand("~/.vimrc.bundles.local"))
+  source ~/.vimrc.bundles.local
+endif
+
+filetype on
