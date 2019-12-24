@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
 	ret = pthread_create(&pid,NULL,handler,&sockfd);
 	char buff[1024] = {0};
-	fun();
+//	fun();
 	close(sockfd);
 	return 0;
 }

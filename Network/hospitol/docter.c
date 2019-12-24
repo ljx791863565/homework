@@ -9,7 +9,7 @@ void doctor_register_result(int result)
 	if (result == 0){
 		printf("doctor register OK\n");
 	}else if (result == 1){
-		peintf("doctor register Fail\n");
+		printf("doctor register Fail\n");
 	}
 
 	return;
@@ -26,11 +26,11 @@ void doctor_register(int fd, char *buf)
 	MYSQL *pdb;
 	mysql_init(&db);
 
-	pdb = mysql_real_connect(&db, "127.0.0.1", "root", "138797", "hospitol", "12345", NULL, 0);
+	pdb = mysql_real_connect(&db, "127.0.0.1", "root", "138797", "hospitol", 12345, NULL, 0);
 	if (pdb == NULL){
 		perror("mysql_real_connect");
 		send_result(fd, 1, 2);
-		return NULL;
+		return;
 	}
 	printf("mysql_real_connect OK\n");
 
@@ -42,7 +42,7 @@ void doctor_register(int fd, char *buf)
 	memset(sqll, 0, sizeof(sql));
 	sprintf(sqll, "insert into doctor values(%s %s %s %d %s %s %s %d);",doct.ID, doct.name, doct.passwd, doct.age, doct.sex, doct.lever, doct.department, doct.room);
 
-	ret = mysql_query(&bd, sqll);
+	int ret = mysql_query(&db, sqll);
 	if (ret != 0){
 		perror("mysql_query");
 		printf("doct insert Fail\n");
@@ -53,5 +53,5 @@ void doctor_register(int fd, char *buf)
 
 	mysql_close(&db);
 
-	return NULL;
+	return;
 }

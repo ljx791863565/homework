@@ -12,7 +12,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <sys/epoll.h>
-//#include <mysql/mysql.h>
+#include <mysql/mysql.h>
 #include <arpa/inet.h>
 #include <sys/types.h>
 #include <pthread.h>

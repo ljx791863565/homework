@@ -22,8 +22,23 @@ void main_menu()
 	printf ("\t请选择\t\n");
 }
 
+void doctor_menu()
+{
+	printf ("\t1.注册\t\n");
+	printf ("\t2.登录\t\n");
+	printf ("\t3.退出\t\n");
+	printf ("\t请选择\t\n");
+}
+
 void doctor_loop()
 {
+	int option;
+	while (1){
+		scanf("%d", &option);
+		if (option == 1){
+			doctor_register();
+		}
+	}
 }
 
 void patient_loop()
