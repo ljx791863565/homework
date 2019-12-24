@@ -14,26 +14,6 @@
 #define MAX_LISTEN 10
 #define MAX_EPOLL 256
 
-void* handler(void *arg)
-{
-	int fd = *(int *)arg;
-	char buf[MAX_BUFF];
-	int ret;
-	while (1){
-		memset(buf, 0, sizeof(buf));
-		ret = read(0, buf, sizeof(buf));
-		if (ret < 0){
-			perror("read");
-			return NULL;
-		}
-		ret = write(fd, buf, ret -1);
-		if (ret < 0){
-			perror("client:read");
-			return NULL;
-		}
-		printf("server: %s\n", buf);
-	}
-}
 int main(int argc, char **argv)
 {
 	if (argc > 3){
@@ -76,11 +56,6 @@ int main(int argc, char **argv)
 	}
 	printf("a new client connectted, ip: %s port :%d\n",inet_ntoa(serAddr.sin_addr), ntohs(serAddr.sin_port));
 	pthread_t pid;
-	ret = pthread_create(&pid, 0, handler, &newFd);
-	if (ret < 0){
-		perror("pthread_create");
-		return -1;
-	}
 	while (1){
 		memset(buf, 0, sizeof(buf));
 		ret = read(newFd, buf, sizeof(buf));
@@ -89,8 +64,15 @@ int main(int argc, char **argv)
 			return -1;
 		}
 		printf("server recv:%s\n", buf);
+		if (!strcmp(buf, "hello")){
+			sprintf(buf, "hello client\n");
+			ret = write(newFd, buf, sizeof(buf));
+			if (ret < 0){
+				perror("write");
+				return -1;
+			}
+		}
 	}
-	pthread_join(pid, NULL);
 	return 0;
 }
 

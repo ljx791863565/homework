@@ -1,55 +1,37 @@
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <errno.h>
+#include "communal.h"
 
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <sys/types.h>
-#include <pthread.h>
-#include <sys/epoll.h>
-
-#include "threadpool.h"
-
-#define MAX_BUFF 1024
-#define MAX_LISTEN 5
-#define MAX_EVENT 1024
-
-void* handler1(void *arg)
+void* working(void *arg)
 {
-	int fd = *(int *)arg;
-	char buf[MAX_BUFF];
-	int ret;
-	while (1){
-		memset(buf, 0, sizeof(buf));
-		ret = read(0, buf, sizeof(buf));
-		if (ret < 0){
-			perror("read");
-			return NULL;
-		}
-		ret = write(fd, buf, ret);
-		printf("server to client: %s\n", buf);
+	MSG_T *p;
+	p = (MSG_T *)arg;
+
+	MSG_HEAD_T msghead;
+	memset(&msghead, 0, sizeof(msghead));
+
+	//客户端传递过来的消息前sizeof(msghead)是消息头
+	memcpy(&msghead, p->buf, sizeof(msghead));
+
+	//网络字节序转换成主机字节序
+	msghead.len = ntohl(msghead.len);
+	msghead.msg_type = ntohl(msghead.msg_type);
+
+	if (msghead.msg_type == 1){
+		doctor_register(p->fd, p->buf);
 	}
 }
 
 int main(int argc, char **argv)
 {
-	if (argc > 2){
-		printf("argc number error\n");
-		return -1;
-	}
-
-	char buf[MAX_BUFF];
 	int ret = 0;
 
 	int listenfd;
 	int epfd; 
-	struct sockaddr_in cliAddr;
+	struct sockaddr_in serAddr;
+	memset(&serAddr, 0, sizeof(serAddr));
 	const char * const local_addr = "10.0.0.88";
-	cliAddr.sin_family = AF_INET;
-	cliAddr.sin_port = htons(atoi(argv[1]));
-	cliAddr.sin_addr.s_addr = inet_addr(local_addr);
+	serAddr.sin_family = AF_INET;
+	serAddr.sin_port = htons(atoi(PORT));
+	serAddr.sin_addr.s_addr = inet_addr(local_addr);
 
 	listenfd = socket(AF_INET, SOCK_STREAM, 0);		//TCP
 	if (listenfd < 0){
@@ -65,7 +47,7 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	ret = bind(listenfd, (const struct sockaddr*)&cliAddr, sizeof(cliAddr));
+	ret = bind(listenfd, (const struct sockaddr*)&serAddr, sizeof(serAddr));
 	if (ret < 0){
 		perror("bind");
 		return -1;
@@ -92,25 +74,28 @@ int main(int argc, char **argv)
 		return -1;
 	}
 
-	struct sockaddr_in serAddr;
-	socklen_t len = sizeof(serAddr);
+	struct sockaddr_in cliAddr;
+	socklen_t len = sizeof(cliAddr);
 	int clientFd, readFd, writeFd;
 	
 	pool_init(6);	//创建线程池并设置最大线程为6个
 
+	int wait_count;		//保存通知事件的个数
+	int i = 0;
+	char buf[MAX_BUF];
+	MSG_HEAD_T msghead;
+	MSG_T *pmsg;
 	while (1){
-		int wait_count;		//保存通知事件的个数
 		wait_count = epoll_wait(epfd, event, MAX_EVENT, 500);
-		int i = 0;
 		for (i = 0; i < wait_count; i++){
 			if (event[i].data.fd == listenfd)	//客户端第一次连接
 			{
-				clientFd = accept(listenfd, (struct sockaddr *)&serAddr, &len);
+				clientFd = accept(listenfd, (struct sockaddr *)&cliAddr, &len);
 				if (clientFd < 0){
 					perror("accept");
 					continue;
 				}
-				printf("a new client connectted, ip: %s port :%d\n",inet_ntoa(serAddr.sin_addr), ntohs(serAddr.sin_port));
+				printf("a new client connectted, ip: %s port :%d\n",inet_ntoa(cliAddr.sin_addr), ntohs(cliAddr.sin_port));
 
 				ev.data.fd  = clientFd;
 				ev.events = EPOLLIN | EPOLLET;
@@ -119,14 +104,16 @@ int main(int argc, char **argv)
 			{
 				readFd = event[i].data.fd;
 				memset(buf, 0, sizeof(buf));
-				ret = read(readFd, buf, 1024);
+				ret = read(readFd, buf, sizeof(buf));
 				if (ret <= 0){
 					continue;
 				}
 				printf("client %s: %s\n",inet_ntoa(cliAddr.sin_addr), buf);
-				ev.events = EPOLLIN | EPOLLET;
-				ev.data.fd = readFd;
-				pool_add_worker(handler1, &readFd);		//把这个任务加入线程池工作列表
+				
+				pmsg->fd = readFd;
+				memcpy(pmsg->buf, buf, ret);
+				
+				pool_add_worker(working, pmsg);		//把这个任务加入线程池工作列表
 
 			}
 
