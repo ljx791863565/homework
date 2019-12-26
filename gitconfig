@@ -1,0 +1,19 @@
+[user]
+	email = liaojia138797@163.com
+	name = ljx
+[color]
+	ui = auto
+[http]
+	postBuffer = 10485760000
+
+[alias]
+	co = checkout
+	st = status
+	bh = branch
+	cm = "commit -m"
+	rs = "reset --hard"
+	df = diff
+	lg = log
+	rt = remote
+	unstage = "reset HEAD --"
+	last = "log -1 HEAD"
