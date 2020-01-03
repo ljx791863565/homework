@@ -14,6 +14,6 @@ int main()
 	int *p2 = NULL;
 	printf("sizeof(char *) = %lu\n", sizeof(p));
 	printf("sizeof(int *) = %lu\n", sizeof(p2));
-
+	printf("sizeof(size_t) = %zu\n", sizeof(size_t));
 	return 0;
 }
