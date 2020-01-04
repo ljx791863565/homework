@@ -19,7 +19,7 @@ typedef struct list{
 
 	void *(*dup)(void *ptr);
 	void (*free)(void *ptr);
-	void (*match)(void *ptr, void *key);
+	int (*match)(void *ptr, void *key);
 }list;
 
 #define listLength(l) ((l)->len)

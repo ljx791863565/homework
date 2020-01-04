@@ -7,9 +7,9 @@
 //T=O(1)
 list *listCreate(void)
 {
-	struct list *list;
+	list *list;
 
-	if (list = zmalloc(sizeof(struct list)) == NULL)
+	if ((list = (zmalloc(sizeof(struct list))) == NULL))
 		return NULL;
 
 	list->head = list->tail = NULL;
@@ -146,7 +146,6 @@ void listDelNode(list *list, listNode *node)
 
 	//判断此节点是不是尾节点
 	//处理后继节点的指针
-	if (node->prev){
 	if (node->next){
 		node->next->prev = node->prev;
 	}else{
@@ -161,7 +160,7 @@ void listDelNode(list *list, listNode *node)
 	list->len--;
 }
 
-/*
+
 //为列表创建一个迭代器
 //direction指示方向 
 //每次对迭代器调用 listNext(),迭代器就返回列表下一个节点
@@ -170,6 +169,9 @@ void listDelNode(list *list, listNode *node)
 listIter *listGetIterator(list *list, int direction)
 {
 	listIter *iter;
+	
+	if ((iter = zmalloc(sizeof(struct listIter))) == NULL)
+		return NULL;
 
 	if (direction == AL_START_HEAD)
 		iter->next = list->head;
@@ -180,7 +182,7 @@ listIter *listGetIterator(list *list, int direction)
 
 	return iter;
 }
-*/
+
 listNode *liistNext(listIter *iter)
 {
 	listNode *current = iter->next;
@@ -219,7 +221,7 @@ list *listDup(list *orig)
 	copy->match = orig->match;
 
 	iter = listGetIterator(orig, AL_START_HEAD);
-	while ((node = list->next(iter)) != NULL){
+	while ((node = listNext(iter)) != NULL){
 		void *value;
 		if (copy->dup){
 			value = copy->dup(node->value);
