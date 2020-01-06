@@ -51,7 +51,120 @@ typedef struct dictht {
 
 //字典 
 typedef struct dist {
+	//特定类型的处理函数
 	dictType *type;
+	//类型处理函数的私有数据
 	void *privdata;
+	//hashTable 2个
+	dictht ht[2];
+	//记录 rehash 进度标志， 值为-1表示rehash未进行
+	int rehashindx;
+	//当前正在运行的安全迭代器数量
+	int iterators;
 } dist;
-#endif
+
+//字典迭代器
+//如果safe属性值为1，表示此迭代器是一个安全迭代器
+//如果safe属性值为0，表示此迭代器不是一个安全迭代器
+//
+//安全迭代器迭代一个dist时，此字典可以调用 dictAdd dictFind和其他函数
+//不安全迭代器只可以对字典调用 dictNext函数
+
+typedef struct dictIterator {
+
+	dict *d;              // 正在迭代的字典
+
+	int table,            // 正在迭代的哈希表号，0/1
+		index,            // 正在迭代的哈希表数组索引
+		safe;             // 安全标志 0：不安全 1：安全
+
+	dictEntry *event,     // 当前哈希表节点
+			  *nextEvent; // 当前哈希表节点的后继节点
+} dictIterator;
+
+
+//hashTable起始大小
+#define DICT_HT_INITIAL_SIZE	4
+
+
+#define dictFreeVal(d, entry) \
+	if ((d)->type->valDestructor) \
+		((d)->type->valDestructor((d)->privdata, (entry)->v.val))
+
+#define dictSetVal(d,entry, _val_) do{ \
+	if ((d)->type->valDup) \
+		entry->v.val = (d)->type->valDup((d)->privdata, _val_); \
+	else \
+		entry->v.val = (_val_); \
+} while (0)
+
+#define dictSetSignedIntegetVal(entry, _val_) do{ \
+	entry->v.s64 = _val_; \
+} while (0)
+
+#define dictSetUnsignedIntegetVal(entry, _val_) do{ \
+	entry->v.u64 = _val_; \
+} while (0)
+
+#define dictFreeKey(d, entry) \
+	if ((d)->type->keyDestructor) \
+		(d)->type->keyDestructor((d)->privdata,(entry)->key)
+
+#define dictSetKey(d, entry, _key_) do { \
+	if ((d)->type->keyDup) \
+		entry->key = (d)->type->keyDup((d)->privdata, _key_); \
+	else \
+		entry->key = _key_; \
+} while (0)
+
+#define dictCompareKeys(d, key1, key2) \
+	(((d)->type->keyCompare) ? \
+	  (d)->type->keyCompare((d)->privdata, key1, key2) : \
+	 (key1) == (key2))
+
+#define dictHashKey(d, key) (d)->type->hashFunction(key)
+#define dictGetKey(he) ((he)->key)
+#define dictGetVal(he) ((he)->v.val)
+#define dictGetSignedIntegerVal(he) ((he)->v.s64)
+#define dictGetUnsignedIntegerVal(he) ((he)->v.u64)
+#define dictSolts(d) ((d)->ht[0].size+(d)->ht[1].size)
+#define dictSize(d) ((d)->ht[0].used+(d)->ht[1].used)
+#define dictIsRehashing(ht) ((ht)->rehashindx != -1)
+
+dict *dictCreate(dictType *type, void *privDataPtr);		//创建一个新的字典 O(1)
+int dictExpand(dict *d, unsigned long size);				//扩大字典容量 O(N)
+int dictAdd(dict *d, void *key, void *val);					//添加新的 key:value 到字典 O(1)
+dictEntry *dictAddRaw(dict *d, void *key);					//dictAdd函数的底层实现
+int dictReplace(dict *d, void *key, void *val);				//添加或更新给定的key:value对 O(1)
+dictEntry *dictReplaceRaw(dict *d, void *key);				//dictReplace函数底层实现
+int dictDelete(dict *d, const void *key);					//根据给定key删除键值对 O(1)
+int dictDeleteNoFree(dict *d, const void *key);				//
+void dictRelease(dict *d);									//清空并释放dict O(N)
+void dictEmpty(dict *d);									//清空并重置dict 但不释放 O(N)
+dictEntry *dictFind(dict *d, const void *key);				//根据给定的key查找dist中对应的dictEntry O(1)
+void *dictFetchValue(dict *d, const void *key);				//根据给定的key查找dist中对应的value O(1)
+int dictResize(dict *d);									//缩小字典容量 O(N)
+
+dictIterator *dictGetIterator(dict *d);						//创建一个不安全迭代器 O(1)
+dictIterator *dictGetSafeIterator(dict *d);					//创建一个安全迭代器 O(!)
+dictEntry *dictNext(dictIterator *iter);					//返回迭代器当前节点 O(1)
+void dictReleaseIterator(dictIterator *iter);				//释放迭代器 O(1)
+dictEntry *dictGetRandomKey(dict *d);						//从dict随机返回一个dictEntry
+
+void dictPrintStats(dict *d);
+unsigned int dictGetHashFunction(const void *key, int len);
+unsigned int dictGetCaseHashFunction(const unsigned char *buf, int len);
+
+void dictEnalbeResize(void);
+void dictDisableResize(void);
+int dictRehash(dict *d, int n);								//对dist进行给定步数的rehash O(N)
+int dictRehashMilliseconds(dict *d, int ms);				//对dict进行给定时间的rehash O(N)
+void dictSetHashFunctionSeed(unsigned int initval);
+unsigned int dictGetHashFunctionSeed(void);
+
+extern dictType dictTypeHeapStringCopyKey;
+extern dictType dictTypeHeapString;
+extern dictType dictTypeHeapStringCopyKeyValue;
+
+
+#endif	// _DICT_H_
