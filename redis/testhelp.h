@@ -23,9 +23,9 @@ int __test_num = 0;
 
 //结果的公布函数
 #define test_report() do { \
-	printf("%d tests, %d passed, %d failed\n", __test_num, __test_num - __failed_tests, __failed_tests); \
+	printf("%d tests, %d passed, %d failed\n", __test_num, (__test_num - __failed_tests), __failed_tests); \
 	if (__failed_tests) { \
-			printf("=== WARNING === We have failed test here...\n"); \
+			printf("=== 测试结果中存在错误... ===\n"); \
 		exit(1); \
 	} \
 } while(0);

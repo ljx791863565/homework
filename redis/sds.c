@@ -436,6 +436,7 @@ sds sdsrange(sds s, int start, int end)
 	return s;
 }
 
+//将sds全部转换为小写字母
 void sdstolower(sds s)
 {
 	int len = sdslen(s);
@@ -445,6 +446,7 @@ void sdstolower(sds s)
 	}
 }
 
+//将sds全部转换为大写字母
 void sdstoupper(sds s)
 {
 	int len = sdslen(s);
@@ -454,6 +456,10 @@ void sdstoupper(sds s)
 	}
 }
 
+//比较s1 s2两个sds
+//返回值如果大于0 表示s1 > s2
+//返回值如果小于0 表示s1 < s2
+//返回0表示两个sds完全相等
 int sdscmp(const sds s1, const sds s2)
 {
 	size_t len1, len2, minlen;
@@ -463,7 +469,7 @@ int sdscmp(const sds s1, const sds s2)
 	minlen = (len1 < len2) ? len1 : len2;
 	cmp = memcmp(s1, s2, minlen);
 	if (cmp == 0) {
-		return len1 - len2;		//0
+		return len1 - len2;		
 	}
 	return cmp;
 }

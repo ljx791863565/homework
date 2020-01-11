@@ -95,20 +95,20 @@ void sdsclear(sds s);										//清除给定sds内容 初始化为"" O(1)
 /* --------------------------------------------------------------------------------------- */
 
 /* ----------------------------基本字符串API的sds版本------------------------------------- */
-sds sdscatvprintf(sds s, const char *fmt, va_list ap);
-sds sdscatprintf(sds s, const char *fmt, ...);
-sds sdstrim(sds s, const char *cast);
-sds sdsrange(sds s, int start, int end);
-int sdscmp(const sds s1, const sds s2);
-sds *sdssplitlen(const char *s, int len, const char *sep, int seplen, int *count);
-void sdsfreesplitres(sds *token, int count);
-void sdstoupper(sds s);
-void sdstolower(sds s);
-sds sdsfromlonglong(long long value);
-sds sdscatrepr(sds s, const char *p, size_t len);
-sds *sdssplitargs(const char *line, int *argc);
-void sdssplitargs_free(sds *argv, int argc);
-sds sdsmapchars(sds s, const char *from, const char *to, size_t setlen);
+sds sdscatvprintf(sds s, const char *fmt, va_list ap);		//字符串格式化输出
+sds sdscatprintf(sds s, const char *fmt, ...);				//字符串格式化输入 类似sprintf
+sds sdstrim(sds s, const char *cast);						//字符串trim
+sds sdsrange(sds s, int start, int end);					//字符串截取
+int sdscmp(const sds s1, const sds s2);						//字符串比较
+sds *sdssplitlen(const char *s, int len, const char *sep, int seplen, int *count);	//字符串分割
+void sdsfreesplitres(sds *token, int count);				//释放分割完的token数组
+void sdstoupper(sds s);										//统一转换小写
+void sdstolower(sds s);										//统一转换大写
+sds sdsfromlonglong(long long value);						//将一个long long 类型数字转换为字符串
+sds sdscatrepr(sds s, const char *p, size_t len);			//添加引用字符串
+sds *sdssplitargs(const char *line, int *argc);				//参数解析
+void sdssplitargs_free(sds *argv, int argc);				//释放解析完的参数数组
+sds sdsmapchars(sds s, const char *from, const char *to, size_t setlen);	//字符串替换
 /* --------------------------------------------------------------------------------------- */
 
 /* -----------------------------暴露给用户的低级API--------------------------------------- */
