@@ -14,7 +14,7 @@ void zlibc_free(void *ptr)
 }
 
 #include <string.h>
-#include "config.h"
+//#include "config.h"
 #include "zmalloc.h"
 
 #define PREFIX_SIZE (sizeof(size_t))
