@@ -1,0 +1,87 @@
+
+
+PING (Packet Internet Groper)，因特网包探索器，用于测试网络连接量的程序。
+
+Ping发送一个ICMP(Internet Control Messages Protocol）即因特网信报控制协议；
+
+回声请求消息给目的地并报告是否收到所希望的ICMP echo （ICMP回声应答）。)
+
+是用来检测网络是否通畅或者网络连接速度的命令
+
+原理是利用网络上机器IP地址的唯一性，给目标IP地址发送一个数据包，要求对方返回一个同样大小的数据包来确定网络是否通畅，延时多少
+
+ICMP协议是TCP/IP协议族的一个子协议
+用于在IP主机和路由器间传递控制信息
+是面向无连接的协议
+ping命令只用到ICMP的两种	ICMP_ECHO 请求回送
+							ICMP_ECHOREPLY 请求回应
+报文的格式头如下
+		|	类型TYPE	|	编码CODE	|	校验和CHECKSUM	|
+		|		标识符ID		|		顺序号SEQ			|
+当TYPE字段为ICMP_ECHO，CODE字段为0时，代表请求回送报文
+当TYPE字段为ICMP_ECHOREPLY，CODE字段为0时，代表请求回应报文
+/*
+#include <netinet/ip_icmp.h>
+   struct icmp
+   {
+		u_int8_t icmp_type;	//消息类型
+		u_int8_t icmp_code;	//消息类型的子码
+		u_int16_t icmp_cksum;	//校验和
+		union
+		{
+			//显示数据报
+			struct ih_idseq	
+			{
+				u_int16_t icd_id;	//数据报ID
+				u_int16_t icd_seq;	//数据报序列号
+			}ih_idseq;
+		}icmp_hun;
+#define icmp_id icmp_hun.ih_idseq.icd_id;
+#define icmp_seq icmp_hun.ih_idseq.icd_seq;
+		union
+		{
+			u_int8_t id_data[1];	//数据
+		}icmp_dun;
+#define icmp_data icmp_dun.id_data;
+   }
+   */
+
+ICMP报头为8字节，数据报最大长度为64K字节
+
+ping命令使用了ip报头中的：
+						ip报头长度IHL	以4字节为一个单位记录ip报头长度 ip_hl
+						生存时间TTL		s为单位，是ip数据报在网络停留的最长时间	值由发送方设定
+										在经历路由的每一个节点减一，当为0时，数据报被丢弃 ip_ttl
+
+		最后封装好的ICMP报文
+		|	IP报头	|	ICMP报头	|	ICMP报文 |
+
+
+
+
+		一些相关函数
+		struct PROTOENT * getprotobyname(const char *name);	//返回对应给定协议名相关的信息,若失败返回NULL
+		name : 一个指向协议名的指针
+		struct protoent{
+			char FAR *p_name;	//正规的协议名
+			char Far *far *p_aliases;	//一个以空指针结尾的可选协议名队列
+			short p_proto;	//以主机字节序排列的协议号
+		};
+
+		int setsockopt(int sockfd, int level, int optname, const void *optval, socklen_t optlen);
+		int select(int maxfdp,fd_set *readfds,fd_set *writefds,fd_set *errorfds,struct timeval*timeout); 
+		struct fd_set：是一个集合，里面存放了文件描述符
+		一般定义后有几个人为可以操作：
+		FD_ZERO(fd_set *):清空集合使没有描述符
+		FD_SET(int fd, fd_set *):将fd加入到集合中
+		FD_CLR(int fd, fd_set *):在集合中删除给定fd， 不再监视
+		FD_ISSET(int fd, fd_set *)：在集合中检测fd是否可以读写
+		maxfdp: 文件描述符的范围+1 非常重要
+		readfds :要监视的 可读 文件描述符的集合 如果文件描述符可读，返回一个大于0的值
+		writefds :要监视的 可写 文件描述符的集合 如果文件描述符可读，返回一个大于0的值
+		errorfds :要监视的 错误 文件描述符的集合 如果文件描述符可读，返回一个大于0的值
+		timeout: 超时选项，有三种状态
+					若这一项NULL select一直阻塞 
+					如果是0，无论有没有监视到文件描述符都立刻返回，文件无变化返回0，有变化返回一个正值
+					如果大于0，在超时内监视到则返回，否则超时后立即返回
+		
