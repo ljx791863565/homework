@@ -8,10 +8,15 @@ struct test
 	short d;
 };
 
+struct None
+{};
+
 int main()
 {
 	struct test t ;
 	printf("sizeof(t) = %lu\n", sizeof(t));
+	struct None n ;
+	printf("sizeof(t) = %lu\n", sizeof(n));
 
 	return 0;
 }

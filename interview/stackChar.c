@@ -16,6 +16,18 @@ void stackPrintf(char *p)
 	strncat(g_buf, p, 1);
 }
 
+//递归实现strlen
+
+int mystrlen(const char *str)
+{
+	assert(str != NULL);
+	if (*str == '\0') {
+		return 0;
+	}else {
+		return 1 + mystrlen(++str);
+	}
+}
+
 //局部变量保存递归结果
 void stackBuf(char *p, char *buf)
 {
