@@ -4,6 +4,9 @@
 #include <assert.h>
 #include <math.h>
 #include <limits.h>
+#include <stdio.h>
+#include <iostream>
+
 long long binToDec(char *binstr)
 {
 	assert(binstr != NULL);
@@ -24,6 +27,9 @@ long long binToDec(char *binstr)
 void decToBin(long long num, char *str)
 {
 	int i = 0;
+	if (num < 0) {
+		num = LLONG_MAX  + num;
+	}
 	while (num != 0) {
 		str[i] = (num % 2) + '0';
 		num /= 2;
@@ -63,6 +69,9 @@ long long octToDec(char *octstr)
 void decToOct(long long num, char *str)
 {
 	int i = 0;
+	if (num < 0) {
+		num = LLONG_MAX + num;
+	}
 	while (num != 0) {
 		str[i] = (num % 8) + '0';
 		num /= 8;
@@ -159,6 +168,9 @@ void decToHex(long long num, char *str)
 {
 	int i = 0;
 	int m = 0;
+	if (num < 0) {
+		num = LLONG_MAX + num;
+	}
 	while (num != 0) {
 		m = (num % 16);
 		switch (m)
@@ -216,10 +228,12 @@ void decToHex(long long num, char *str)
 }
 
 //目前只能支持正数  负数的情况我还没想好怎么转换。。。
+//支持了负数 但只能用64位的 long long 类型表示　
+//即signed long long 类型的-1 和 signed long long LLONG_MAX + 1 的二进制表示是一样的
 int main(int argc, const char *argv[])
 {
-	long long num = 9223372036854775806;
-//	long long num = -10;
+//	long long num = 9223372036854775806;
+	long long num = 12;
 	char *p = (char*)malloc(sizeof(char)*65);
 	if (p == NULL) {
 		perror("malloc");
@@ -231,14 +245,15 @@ int main(int argc, const char *argv[])
 	printf("%lld\n", new_num);
 
 	decToOct(num, p);
-	printf("%s\n", p);
+	printf("0%s\n", p);
 	new_num = octToDec(p);
 	printf("%lld\n", new_num);
 	
 	decToHex(num, p);
-	printf("%s\n", p);
+	printf("0x%s\n", p);
 	new_num = hexToDec(p);
 	printf("%lld\n", new_num);
+
 	free(p);
 	p = NULL;
 	return 0;

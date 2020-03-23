@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <limits.h>
+#include <ctype.h>
 /*
 	int atoi(const char *pstr);
 	将字符串转换成整型数的函数

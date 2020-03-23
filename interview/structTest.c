@@ -40,6 +40,11 @@ struct st_task
 	uint32_t value;
 	uint64_t timestamp;
 };
+struct st{
+	int i;
+	short b;
+	char c;
+};
 
 int main()
 {
@@ -49,6 +54,6 @@ int main()
 	memcpy(&task, &a, sizeof(uint64_t));
 
 	printf("%11u, %11u, %llu\n", task.id, task.value, task.timestamp);
-
+	printf("%llu\n", sizeof(struct st));
 	return 0;
 }
