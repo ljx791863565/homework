@@ -230,10 +230,12 @@ void decToHex(long long num, char *str)
 //目前只能支持正数  负数的情况我还没想好怎么转换。。。
 //支持了负数 但只能用64位的 long long 类型表示　
 //即signed long long 类型的-1 和 signed long long LLONG_MAX + 1 的二进制表示是一样的
+//如果要用不同类型表示 必须重载函数使得不同的数据类型调用不同函数
 int main(int argc, const char *argv[])
 {
 //	long long num = 9223372036854775806;
-	long long num = 12;
+	long long num = -12;
+	printf("%d\n", num);	
 	char *p = (char*)malloc(sizeof(char)*65);
 	if (p == NULL) {
 		perror("malloc");
