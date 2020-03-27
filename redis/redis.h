@@ -1,41 +1,6 @@
-/*
- * Copyright (c) 2009-2012, Salvatore Sanfilippo <antirez at gmail dot com>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- *   * Redistributions of source code must retain the above copyright notice,
- *     this list of conditions and the following disclaimer.
- *   * Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *   * Neither the name of Redis nor the names of its contributors may be used
- *     to endorse or promote products derived from this software without
- *     specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
-
 #ifndef __REDIS_H
 #define __REDIS_H
 
-#include "fmacros.h"
-#include "config.h"
-
-#if defined(__sun)
-#include "solarisfixes.h"
-#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -349,6 +314,24 @@
 /* The actual Redis Object */
 #define REDIS_LRU_CLOCK_MAX ((1<<21)-1) /* Max value of obj->lru */
 #define REDIS_LRU_CLOCK_RESOLUTION 10 /* LRU clock resolution in seconds */
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//:表示位域																													//
+//位域必须存储在同一个类型中 不能跨类型 同时也说明位域的长度不会超过所定义类型的长度										//
+//如果一个定义类型单元里所剩空间无法存放下一个域 则下一个域应该从下一单元开始存放											//
+//例如：所定义的类型是int类型 一共32为 目前用掉了25位还剩下7位 这时要存储一个8位的位域元素									//
+//那么这个元素就只能从下一个int类型的单元开始而不会在前面一个int类型中占7为后面的int类型中占1位。							//
+//如果位域的位域长度为0表示是个空域，同时下一个域应当从下一个字节单元开始存放。												//
+//使用无名的位域来作为填充和调整位置，切记该位域是不能被使用的。															//		
+//位域的本质上就是一种结构体类型，不同的是其成员是按二进制位来分配的。														//		
+//																															//
+//即type占第一个字节的前1-4位 notused占第一个字节的5-6位 encoding占第二个字节的1-4位 lru占位第三到第五字节 共22位			//
+//  0       3   5   7       11      15              23              31          37  39										//
+//  --------------------------------------------------------------------------------										//	
+//  |               |               |               |               |               |										//
+//  ---------------------------------------------------------------------------------										//
+//  |       |   |空 |       |空     |                                           |空 |										//
+//    type  notuesd encoding            lur																					//
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*
  * Redis 对象
  */
@@ -1234,15 +1217,15 @@ void freeListObject(robj *o);
 void freeSetObject(robj *o);
 void freeZsetObject(robj *o);
 void freeHashObject(robj *o);
-robj *createObject(int type, void *ptr);
-robj *createStringObject(char *ptr, size_t len);
+robj *createObject(int type, void *ptr);		//创建一个object  type类型 ptr值
+robj *createStringObject(char *ptr, size_t len);	//给定字符数组ptr和长度len创建string对象
 robj *dupStringObject(robj *o);
 int isObjectRepresentableAsLongLong(robj *o, long long *llongval);
 robj *tryObjectEncoding(robj *o);
 robj *getDecodedObject(robj *o);
 size_t stringObjectLen(robj *o);
-robj *createStringObjectFromLongLong(long long value);
-robj *createStringObjectFromLongDouble(long double value);
+robj *createStringObjectFromLongLong(long long value);		//根据给定数据创建string对象 value为long long类型
+robj *createStringObjectFromLongDouble(long double value);	//根据给定数据创建string对象 value为long double类型
 robj *createListObject(void);
 robj *createZiplistObject(void);
 robj *createSetObject(void);

@@ -2,8 +2,9 @@
 * zmalloc.h/zmalloc.c		内存分配
 * sds.h/sds.c				动态字符串
 * adlist.h/adlist.c			双端链表
-* dict.h/dict.z				字典
-* server.h/server.c			跳跃表	zskiplistNode t_zset.c中所有zsl开头的函数
+* dict.h/dict.c				字典
+* redis.h					zskiplist 结构和 zskiplistNode 结构 以及 t_zset.c 中所有以 zsl 开头的函数
+							比如 zslCreate  zslInsert  zslDeleteNode 
 * hyperloglog.c				基数统计	hllhdr结构, 所有hll开头的函数
 
 
