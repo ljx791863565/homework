@@ -34,6 +34,10 @@
  *
  */
 #include <string.h>
+/*
+ * 对齐
+ * 结构体中以最大长度数据类型的整数倍对齐内存 如果不够就补全到整数倍·
+ */
 struct st_task
 {
 	uint16_t id;
@@ -45,6 +49,12 @@ struct st{
 	short b;
 	char c;
 };
+struct st_c {
+	short a;
+	short b;
+	short c;
+};
+
 
 //位域出现的原因是由于某些信息的存储表示只需要几个bit位就可以表示而不需要一个完整的字节，同时也是为了节省存储空间和方便处理。
 struct A
@@ -66,5 +76,6 @@ int main()
 	printf("%1u, %1u, %lu\n", task.id, task.value, task.timestamp);
 	printf("%lu\n", sizeof(struct st));
 	printf("%lu\n", sizeof(struct A));
+	printf("%lu\n", sizeof(struct st_c));
 	return 0;
 }
