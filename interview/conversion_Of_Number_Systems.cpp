@@ -7,7 +7,7 @@
 #include <stdio.h>
 #include <iostream>
 
-long long binToDec(char *binstr)
+unsigned long long binToDec(char *binstr)
 {
 	assert(binstr != NULL);
 	int len = strlen(binstr);
@@ -16,7 +16,7 @@ long long binToDec(char *binstr)
 		assert(binstr[i] == '0' || binstr[i] == '1');
 	}
 
-	long long num = 0;
+	unsigned long long num = 0;
 	for (i = 0; i < len; i++) {
 		//此处要注意字符串中字符 '0' '1' 转换成数字 0 1
 		num += (binstr[i] - '0') * pow(2, len-i-1);
@@ -24,7 +24,7 @@ long long binToDec(char *binstr)
 	return num;
 }
 
-void decToBin(long long num, char *str)
+void decToBin(unsigned long long num, char *str)
 {
 	int i = 0;
 	if (num < 0) {
@@ -49,7 +49,7 @@ void decToBin(long long num, char *str)
 	str[k] = '\0';	//字符串结尾
 }
 
-long long octToDec(char *octstr)
+unsigned long long octToDec(char *octstr)
 {
 	assert(octstr != NULL);
 	int len = strlen(octstr);
@@ -59,14 +59,14 @@ long long octToDec(char *octstr)
 			|| octstr[i] == '4' || octstr[i] == '5' || octstr[i] == '6' || octstr[i] == '7');
 	}
 
-	long long num = 0;
+	unsigned long long num = 0;
 	for (i = 0; i < len; i++) {
 		num += (octstr[i] - '0') * pow(8, len-i-1);
 	}
 	return num;
 }
 
-void decToOct(long long num, char *str)
+void decToOct(unsigned long long num, char *str)
 {
 	int i = 0;
 	if (num < 0) {
@@ -91,7 +91,7 @@ void decToOct(long long num, char *str)
 	str[k] = '\0';	//字符串结尾
 }
 
-long long hexToDec(char *hexstr)
+unsigned long long hexToDec(char *hexstr)
 {
 	assert(hexstr != NULL);
 	int len = strlen(hexstr);
@@ -105,7 +105,7 @@ long long hexToDec(char *hexstr)
 			|| hexstr[i] == 'a' || hexstr[i] == 'b' || hexstr[i] == 'c' || hexstr[i] == 'd'
 			|| hexstr[i] == 'e' || hexstr[i] == 'f' );
 	}
-	long long num = 0;
+	unsigned long long num = 0;
 	for (i = 0; i < len; i++) {
 		switch (hexstr[i])
 		{
@@ -164,7 +164,7 @@ long long hexToDec(char *hexstr)
 	return num;
 }
 
-void decToHex(long long num, char *str)
+void decToHex(unsigned long long num, char *str)
 {
 	int i = 0;
 	int m = 0;
@@ -234,8 +234,8 @@ void decToHex(long long num, char *str)
 int main(int argc, const char *argv[])
 {
 //	long long num = 9223372036854775806;
-	long long num = -12;
-	printf("%d\n", num);	
+	unsigned long long num = -12;
+	printf("%llu\n", num);	
 	char *p = (char*)malloc(sizeof(char)*65);
 	if (p == NULL) {
 		perror("malloc");
@@ -243,18 +243,18 @@ int main(int argc, const char *argv[])
 	}
 	decToBin(num, p);
 	printf("%s\n", p);
-	long long new_num = binToDec(p);
-	printf("%lld\n", new_num);
+	unsigned long long new_num = binToDec(p);
+	printf("%llu\n", new_num);
 
 	decToOct(num, p);
 	printf("0%s\n", p);
 	new_num = octToDec(p);
-	printf("%lld\n", new_num);
+	printf("%llu\n", new_num);
 	
 	decToHex(num, p);
 	printf("0x%s\n", p);
 	new_num = hexToDec(p);
-	printf("%lld\n", new_num);
+	printf("%llu\n", new_num);
 
 	free(p);
 	p = NULL;
