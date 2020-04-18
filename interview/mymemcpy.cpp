@@ -12,7 +12,7 @@ void *myMemcpy1(void *dest, const void *src, size_t len)
 	unsigned char *pdest = (unsigned char *)dest;
 	
 	while (len-- > 0)
-		*pdest = *psrc;
+		*pdest++ = *psrc++;
 
 	return dest;
 }

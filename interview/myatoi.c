@@ -48,6 +48,26 @@ int myatoi(const char *str)
 
 	return (int)ret;
 }
+
+void myitoa(int i, char *str)
+{
+	int iOriginal = i;
+	char pch;
+	if (iOriginal < 0) {
+		i = -i;
+	}
+	pch = str;
+	
+	do {
+		*pch++ = i % 10 + '0';
+	} while ((i / 10) > 0);
+
+	if (iOriginal < 0) {
+		*pch++ = '-';	
+	}
+	*pch = '\0';
+	strrev(str);
+}
 int main()
 {
 	char *str1 = NULL;
