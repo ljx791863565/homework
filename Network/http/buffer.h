@@ -11,7 +11,27 @@
 //      |		|					|				|
 //      --------------------------------------------
 //      |		|					|				|
-//		0		readindex_		writeindex_			size
+//		0		readindex_		writeindex_			size()
+//
+//		^		^					^				^
+//		|		|					|				|
+//		perpendable
+//						readable				
+//										writeable
+//
+//		perpednable = readable
+//		readable = wirteindex_ - readindex_
+//		writeable = size() - wirteindex_
+//		
+//		0 <= readindex_ <= wirteindex_ <= size()
+//
+//		初始化 1024bit
+//		-------------------------------------------------
+//		|		|										|
+//		-------------------------------------------------
+//		0		8										1032
+//			readindex_
+//			writeindex_
 class Buffer
 {
 	static const size_t kCheapPrepend = 8;
@@ -25,8 +45,20 @@ public:
 		: buffer_(initialSize+8),
 		readIndex_(kCheapPrepend),
 		writeIndex_(kCheapPrepend) 
-	{}
+	{
+		assert(readableBytes() == 0);
+		assert(writeableBytes() == initialSize);
+		assert(perpendableBytes() == kCheapPrepend);
+	}
 
+	void swap(Buffer& rhs)
+	{
+		buffer._swap(rhs.buffer_);
+		std::swap(readindex_, rhs.readindex_);
+		std::swap(writeindex_, rhs.writeindex_);
+	}
+
+	//read
 	void retrieve(size_t len) {
 		assert(len <= readableBytes());
 		if (len < readableBytes()) {
@@ -36,6 +68,7 @@ public:
 		} 
 	}
 
+	//read all 
 	void retrieveAll() {
 		readIndex_ = kCheapPrepend;
 		writeIndex_ = kCheapPrepend;

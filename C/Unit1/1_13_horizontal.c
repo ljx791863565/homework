@@ -1,7 +1,14 @@
+
+/*
+ *打印输入单词长度的水平直方图
+ */
+
+
+
 #include <stdio.h>
 
-#define MAXHIST 15
-#define MAXWORD 11
+#define MAXHIST 15		//直方图的最大长度
+#define MAXWORD 11		//单词的最大长度
 #define IN 1
 #define OUT 0
 
@@ -9,25 +16,25 @@
 int main()
 {
 	int c, i, nc, state;
-	int len;
-	int maxvalue;
-	int ovflow;
+	int len;			//直方图中长条的长度
+	int maxvalue;		//出现频率最多的单词长度的次数
+	int overflow;
 	int wl[MAXWORD];
 
 	state = OUT;
 	nc = 0;
-	ovflow = 0;
+	overflow = 0;
 	for (i=0; i<MAXWORD; ++i){
 		wl[i] = 0;
 	}
-	while ((c = getchar()) != 27){
+	while ((c = getchar()) != EOF){
 		if (c == ' ' || c == '\n' || c == '\t'){
 			state = OUT;
 			if (nc > 0){
 				if (nc < MAXWORD){
 					++wl[nc];
 				}else{
-					++ovflow;
+					++overflow;
 				}
 			}
 			nc = 0;
@@ -39,16 +46,15 @@ int main()
 		}
 	}
 	maxvalue = 0;
-	for (i=0; i<MAXWORD; ++i){
+	for (i=1; i<MAXWORD; ++i){
 		if (wl[i] > maxvalue){
 			maxvalue = wl[i];
 		}
 	}
-
 	for (i=1; i<MAXWORD; ++i){
 		printf("%5d - %5d : ",i, wl[i]);
 		if (wl[i] > 0){
-			if ((len = wl[i] * MAXHIST / maxvalue) < 0){
+			if ((len = wl[i] * MAXHIST / maxvalue) <= 0){
 				len = 1;
 			}
 		}else{
@@ -61,8 +67,8 @@ int main()
 		}
 		putchar('\n');
 	}
-	if (ovflow > 0){
-		printf("There are %d worlds >= %d\n",ovflow, MAXWORD);
+	putchar('\n');
+	if (overflow > 0){
+		printf("There are %d worlds >= %d\n",overflow, MAXWORD);
 	}
-	return 0;
 }
