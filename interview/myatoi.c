@@ -66,7 +66,7 @@ void myitoa(int i, char *str)
 		*pch++ = '-';	
 	}
 	*pch = '\0';
-	strrev(str);
+	reverse(str);
 }
 int main()
 {
