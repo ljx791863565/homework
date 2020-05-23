@@ -57,8 +57,10 @@ int pthread_cond_timeout_np(pthread_cond_t *cond, pthread_mutex_t * mutex, unsig
     if (msecs != 0) {
         struct timespec ts;
         setTimespecRelative(&ts, msecs);
+		/*当在指定时间内有信号传过来时，pthread_cond_timedwait()返回0，否则返回一个非0数*/
         return pthread_cond_timedwait(cond, mutex, &ts);
     } else {
+
         return pthread_cond_wait(cond, mutex);
     }
 }
