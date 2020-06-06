@@ -25,7 +25,19 @@
 #define SYNLOG //同步写日志
 //#define ASYNLOG       //异步写日志
 
+/*
+ * 当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序必须立即处理该事件
+ * 如果不处理，下次调用epoll_wait时，不会再次响应应用程序并通知此事件。
+ * ET模式在很大程度上减少了epoll事件被重复触发的次数，因此效率要比LT模式高。
+ * epoll工作在ET模式的时候，必须使用非阻塞套接口，以避免由于一个文件句柄的阻塞读/阻塞写操作把处理多个文件描述符的任务饿死。
+ */
+
 //#define ET            //边缘触发非阻塞
+
+/*
+ * 当epoll_wait检测到描述符事件发生并将此事件通知应用程序，应用程序可以不立即处理该事件。
+ * 下次调用epoll_wait时，会再次响应应用程序并通知此事件。
+ */
 #define LT //水平触发阻塞
 
 //这三个函数在http_conn.cpp中定义，改变链接属性
@@ -188,6 +200,7 @@ void timer_handler()
 //定时器回调函数，删除非活动连接在socket上的注册事件，并关闭
 void cb_func(client_data *user_data)
 {
+	//epoll事件注册函数 从epoll监听中删除一个sockfd
     epoll_ctl(epollfd, EPOLL_CTL_DEL, user_data->sockfd, 0);
     assert(user_data);
     close(user_data->sockfd);
@@ -221,7 +234,8 @@ int main(int argc, char *argv[])
     }
 
     int port = atoi(argv[1]);
-
+	
+	//添加信号处理
     addsig(SIGPIPE, SIG_IGN);
 
     //创建数据库连接池
@@ -253,6 +267,11 @@ int main(int argc, char *argv[])
 #endif
 
  
+	/*
+	 * PE_INET 基本等同于AF_INET 
+	 * 对于BSD,是AF,对于POSIX是PF
+	 * 理论上建立socket时是指定协议，应该用PF_xxxx，设置地址时应该用AF_xxxx
+	 */
     int listenfd = socket(PF_INET, SOCK_STREAM, 0);
     assert(listenfd >= 0);
 
@@ -264,11 +283,17 @@ int main(int argc, char *argv[])
     struct sockaddr_in address;
     bzero(&address, sizeof(address));
     address.sin_family = AF_INET;
+	//INADDR_ANY 表示将所有指定port的连接address都交给服务器处理
     address.sin_addr.s_addr = htonl(INADDR_ANY);
     address.sin_port = htons(port);
 
 
     int flag = 1;
+	/*
+	 * SO_REUSEADDR
+	 * 这个套接字选项通知内核，如果端口忙，但TCP状态位于 TIME_WAIT ，可以重用端口。
+	 * 如果你的服务程序停止后想立即重启，而新套接字依旧使用同一端口，此时SO_REUSEADDR 选项非常有用
+	 */
     setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, &flag, sizeof(flag));
     ret = bind(listenfd, (struct sockaddr *)&address, sizeof(address));
     assert(ret >= 0);
@@ -389,11 +414,12 @@ int main(int argc, char *argv[])
                 }
             }
 
-            //处理信号
+            //处理信号 (信号是通过管道传输过来的)
             else if ((sockfd == pipefd[0]) && (events[i].events & EPOLLIN))
             {
                 int sig;
                 char signals[1024];
+				//接收到管道里的信息
                 ret = recv(pipefd[0], signals, sizeof(signals), 0);
                 if (ret == -1)
                 {
@@ -409,11 +435,13 @@ int main(int argc, char *argv[])
                     {
                         switch (signals[i])
                         {
+						//定时器终止时发送给进程的信号
                         case SIGALRM:
                         {
                             timeout = true;
                             break;
                         }
+						//杀死或的killall命令发送到进程默认的信号
                         case SIGTERM:
                         {
                             stop_server = true;

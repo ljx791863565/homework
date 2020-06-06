@@ -29,18 +29,21 @@ private:
     std::list<T *> m_workqueue; //请求队列
     locker m_queuelocker;       //保护请求队列的互斥锁
     sem m_queuestat;            //是否有任务需要处理
-    bool m_stop;                //是否结束线程
+    bool m_stop;                //是否结束线程标志
     connection_pool *m_connPool;  //数据库
 };
 template <typename T>
-threadpool<T>::threadpool( connection_pool *connPool, int thread_number, int max_requests) : m_thread_number(thread_number), m_max_requests(max_requests), m_stop(false), m_threads(NULL),m_connPool(connPool)
+threadpool<T>::threadpool( connection_pool *connPool, int thread_number, int max_requests) 
+	: m_thread_number(thread_number), m_max_requests(max_requests), m_stop(false), m_threads(NULL),m_connPool(connPool)
 {
     if (thread_number <= 0 || max_requests <= 0)
         throw std::exception();
-    m_threads = new pthread_t[m_thread_number];
+    
+	m_threads = new pthread_t[m_thread_number];
     if (!m_threads)
         throw std::exception();
-    for (int i = 0; i < thread_number; ++i)
+
+	for (int i = 0; i < thread_number; ++i)
     {
         //printf("create the %dth thread\n",i);
         if (pthread_create(m_threads + i, NULL, worker, this) != 0)
@@ -48,6 +51,9 @@ threadpool<T>::threadpool( connection_pool *connPool, int thread_number, int max
             delete[] m_threads;
             throw std::exception();
         }
+		//线程分离失败
+		//一个分离的线程是不能被其他线程回收或杀死的，它的存储器资源在它终止时由系统自动释放
+		//默认情况下，线程被创建成可结合的
         if (pthread_detach(m_threads[i]))
         {
             delete[] m_threads;
@@ -61,6 +67,8 @@ threadpool<T>::~threadpool()
     delete[] m_threads;
     m_stop = true;
 }
+
+//添加任务到线程池
 template <typename T>
 bool threadpool<T>::append(T *request)
 {
@@ -75,6 +83,7 @@ bool threadpool<T>::append(T *request)
     m_queuestat.post();
     return true;
 }
+
 template <typename T>
 void *threadpool<T>::worker(void *arg)
 {

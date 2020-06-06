@@ -699,6 +699,14 @@ http_conn::HTTP_CODE http_conn::do_request()
 
         free(m_url_real);
     }
+    else if (*(p + 1) == '9')
+    {
+        char *m_url_real = (char *)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/test.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+
+        free(m_url_real);
+    }
     else
         strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
 

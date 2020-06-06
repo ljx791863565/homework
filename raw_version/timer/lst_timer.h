@@ -25,6 +25,7 @@ public:
     util_timer *next;
 };
 
+//定时器list
 class sort_timer_lst
 {
 public:
@@ -45,11 +46,13 @@ public:
         {
             return;
         }
+		//表头为NULL
         if (!head)
         {
             head = tail = timer;
             return;
         }
+		//升序排序插入到head前 
         if (timer->expire < head->expire)
         {
             timer->next = head;
@@ -57,6 +60,7 @@ public:
             head = timer;
             return;
         }
+		//否则插入到head后
         add_timer(timer, head);
     }
     void adjust_timer(util_timer *timer)
@@ -161,6 +165,7 @@ private:
             prev = tmp;
             tmp = tmp->next;
         }
+		//只有一个节点
         if (!tmp)
         {
             prev->next = timer;
