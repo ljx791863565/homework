@@ -7,6 +7,7 @@
 #include <errno.h>		//perror()
 #include <fcntl.h>		//提供文件控制函数 fopen()
 #include <string.h>		//提供c字符串操作函数
+#include <assert.h>
 
 //涉及到文件操作及时间操作时加入如下头文件
 #include <time.h>		//提供时间相关函数
@@ -23,7 +24,7 @@
 						//honstent* gethostbyaddr(const void *addr, size_t len, int type)
 #include <netinet/in.h>	//定义数据结构 struct sockaddr_in 
 #include <sys/ioctl.h>	//提供对IO控制的函数
-
+#include <sys/epoll.h>
 //  涉及到用户权限及密码验证时用到的头文件
 //编译时加入 -lcrypt链接加密算法库
 #include <crypt.h>		//提供使用DES加密算法的加密函数
@@ -33,6 +34,8 @@
 
 #include <pthread.h>	//提供多线程操作函数	//编译时需要连接-lpthread函数库
 #include <sys/poll.h>	//IO复用
+#include <mysql/mysql.h>
+
 
 #include <signal.h>		//提供信号操作函数
 #include <sys/wait.h>	//进程等待

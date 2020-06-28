@@ -8,5 +8,5 @@ create table student
 	id_card varchar(20) not null,
 	phone_number varchar(12) not null,
 	collage varchar(40) not null,
-	specialty varcgar(40) not null 
+	specialty varchar(40) not null 
  );
