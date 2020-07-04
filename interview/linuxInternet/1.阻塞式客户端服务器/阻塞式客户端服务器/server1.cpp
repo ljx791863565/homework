@@ -21,7 +21,7 @@ int main()
     SOCKET listenSock;//服务器监听套接字
     char  messBuff[MESS_SIZE];
  
-    sockaddr_in svrAddr;//服务器地址 客户端地址
+    struct sockaddr_in svrAddr;//服务器地址 客户端地址
     memset(&svrAddr,0,sizeof(svrAddr));//初始化为0
     //创建一个服务器socket
     listenSock = socket(AF_INET,SOCK_STREAM,0);  //基于TCP 
@@ -40,7 +40,7 @@ int main()
    cout<<"--------------Server is Online------------------------"<<endl;
     //创建保存客户端信息的结构体
     SOCKET  clientSock;
-    sockaddr_in clientAddr;// 客户端地址
+    struct sockaddr_in clientAddr;// 客户端地址
     socklen_t  clientLen = sizeof(clientAddr);
     memset(&clientAddr,0,sizeof(clientAddr));
    // 循环等待客户端的连接

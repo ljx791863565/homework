@@ -1,6 +1,22 @@
 #include <stdio.h>
 #include <ctype.h>
+#define BUFSIZE 100
 
+char buf[BUFSIZE];
+int bufp = 0;
+static int getch()
+{
+	return (bufp > 0) ? buf[--bufp] : getchar();
+}
+
+static void ungetch(int c)
+{
+	if (bufp >= BUFSIZE) {
+		printf("ungetch : too many charachters\n");
+	}else {
+		buf[bufp++] = c;
+	}
+}
 int getint(int *pn)
 {
 	int c, sign;
@@ -20,7 +36,7 @@ int getint(int *pn)
 	}
 	*pn *= sign;
 	if (c != EOF){
-		ungetch();
+		ungetch(c);
 	}
 	return c;
 }
