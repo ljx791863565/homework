@@ -213,5 +213,3 @@ void printTable(table *t)
 		}
 	}
 }
-
-
