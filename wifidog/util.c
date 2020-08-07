@@ -38,7 +38,35 @@
 	debug(LOCK_DEBUG, "wd_gethostbyname() unlocked");\
 } while (0)
 
+#ifndef __ANDROID__
+#define WD_SHELL_PATH "/system/bin/sh"
+#else
+#define WD_SHELL_PATH "/bin/sh"
+#endif
+
+//ICMP raw socket
 static int icmp_fd;
+
 static pthread_mutex_t ghbn_mutex = PTHREAD_MUTEX_INITIALIZER;
 
 static unsigned short rand16(void);
+
+int execute(const char *cmd_line, int quiet)
+{
+	int pid, status, rc;
+	const char *new_argv[4];
+	new_argv[0] = WD_SHELL_PATH;
+	new_argv[1] = "-c";
+	new_argv[2] = cmd_line;
+	new_argv[3] = NULL;
+
+	pid = safe_fork();
+	if (pid == 0) {
+		if (quiet) {
+			close(2);
+		}
+		if (e) {
+		
+		}
+	}
+}
