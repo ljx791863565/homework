@@ -1,8 +1,11 @@
- 
-书名类
-string bookName;
-string author;
-string publishingHouse;
-string ISBN;
 
-管理类
+# 图书管理系统
+
+## 模块
+- 读者管理
+- 图书管理
+- 借阅管理
+- 系统维护
+
+## 流程 
+主函数

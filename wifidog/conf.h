@@ -2,8 +2,48 @@
 #define _CONF_H_
 
 /*==============================DEFINE=====================================*/
-extern pthread_mutex_t config_mutex;
+#ifndef SYSCONFDIR
+#define DEFAULT_CONFIGFILE "/etc/wifidog.conf"
+#define DEFAULT_HIMLMSGFILE "/etc/wifidog-msg.html"
+#else
+#define DEFAULT_CONFIGFILE SYSCONFDIR"/wifidog.conf"
+#define DEFAULT_HIMLMSGFILE SYSCONFDIR"/wifidog-msg.html"
+#endif
+
+#define DEFAULT_DAEMON 1
+#define DEFAULT_DEBUGLEVEL LOG_INFO
+#define DEFAULT_HTTPDMAXCONN 10
+#define DEFAULT_GATEWAYID NULL
+#define DEFAULT_GATEWAYPORT 2060
+#define DEFAULT_HTTPDNAME "WiFiDog"
+#define DEFAULT_CLIENTTIMEOUT 5
+#define DEFAULT_CHECLINTERVAL 60
+#define DEFAULT_LOG_SYSLOG 0
+#define DEFAULT_SYSLOG_FACILITY LOG_DAEMON
+#define DEFAULT_WDCTL_SOCK "/tmp/wdctl.sock"
+#define DEFAULT_INTERNAL_SOCK "tmp/wifidog.sock"
+#define DEFAULT_AUTHSERVPORT 80
+#define DEFAULT_AUTHSERVSSLPORT 443
+#define DEFAULT_AUTHSERVSSLAVAILABLE 0
+#define DEFAULT_AUTHSERVPATH "/wifidog/"
+#define DEFAULT_AUTHSERVLOGINPATHFRAGMENT "login/?"
+#define DEFAULT_AUTHSERVPORTALPATHFRAGMENT "portal/?"
+#define DEFAULT_AUTHSERVMSGPATHFRAGMENT "gw_message.php"
+#define DEFAULT_AUTHSERVPINGPATHFRAGMENT "ping/?"
+#define DEFAULT_AUTHSERVAUTHPATHFRAGMENT "auth/?"
+#define DEFAULT_AUTHSERVSSLCERTPATH "/etc/ssl/certs"
+#define DEFAULT_AUTHSERVSSLPEERVER 1
+#define DEFAULT_DELTATRAFFIC 0
+#define DEFAULT_ARPTABLE "/proc/net/arp"
+#define DEFAULT_AUTHSERVSSLSNI 0
+#define FWRULESET_GLOBAL "global"
+#define FWRULESET_VALIDATING_USERS "validating_users"
+#define FWURLESET_KNOWN_USERS "known-users"
+#define FWURLESET_AUTH_IS_DOWN "auth-is-down"
+#define FWRULESET_UNKONWN_USERS "unknown-users"
+#define FWURLESET_LOCKED_USERS "locked-users"
 /*==============================Data Structre=====================================*/
+extern pthread_mutex_t config_mutex;
 //认证服务器信息结构
 typedef struct _auth_serv_t {
 	char *authserv_hostname;	//服务器主机名
