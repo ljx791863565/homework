@@ -27,7 +27,7 @@ void Mul(char *a, char *b, int pos)
 {
 	char *ap = a;
 	char *bp = b;
-	Node *head = 0;
+	Node *head = NULL;
 	Node *p, *q = head, *p1;
 	int temp = 0, temp1, bbit;
 
@@ -78,7 +78,9 @@ int main()
 	cin.getline(test1, MAX, '\n');
 	cin.getline(test2, MAX, '\n');
 	if (p = strchr(test1, '.')){
+		//记录小数点后位数
 		pos += strlen(test1) - (p - test1) - 1;
+		//整体向前移动一位 去除掉小数点
 		do {
 			p ++;
 			*(p - 1) = *p;
@@ -91,6 +93,7 @@ int main()
 			*(p - 1) = *p;
 		}while (*p);
 	}
+	//反转字符串
 	Mul(strrev(test1), strrev(test2), pos);
 
 	return 0;

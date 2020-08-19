@@ -25,16 +25,27 @@ extern "C"
 #define CJSON_VERSION_MINOR 7
 #define CJSON_VERSION_PATCH 12
 
+/*
+ * default 可见性是默认的符号链接可见性
+ * 如果我们不指定visibility 属性，那么默认就使用默认的可见性。
+ * 默认可见性的对象与函数可以直接在其他模块中引用，包括在动态链接库中 ，它属于一个正常，完整的外部连接。
+ */
 #define CJSON_PUNLIC(type) __attribute__((visibility("default")))type
 typedef struct cJSON
 {
 	struct cJSON *next;
 	struct cJSON *prev;
 	struct cJSON *child;
-	int type;
+	
+	//对象的类型
+	int type;		
+	
+	//如果 type == cJSON_String 则是字符串
 	char *Valuestring;
 	int valueint;
 	double valuedouble;
+
+	//对象名称
 	char *string
 }cJSON;
 
@@ -51,6 +62,7 @@ typedef int cJSON_bool;
 
 CJSON_PUBLIC(const char*) cJSON_Version(void);
 CJSON_PUBLIC(void) cJSON_InitHooks(cJSON_Hooks hooks);
+
 
 CJSON_PUBLIC(cJSON*) cJSON_Parse(const char *value);
 CJSON_PUBLIC(cJSON*) cJSON_ParseWithOpts(const char *value, const char **return_parse_end, 

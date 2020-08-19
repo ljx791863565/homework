@@ -1,11 +1,12 @@
 #include <stdio.h>
 #include <dirent.h>
 
+#define FILEDIR "/home/ljx/working/address_book"
 int main(int argc, const char *argv[])
 {
 	char buff[1024] = {0};
 	struct dirent *entptr = NULL;
-	DIR *dirptr = opendir("/home/ljx/working/address_book");
+	DIR *dirptr = opendir(FILEDIR);
 	if (!dirptr) {
 		goto error;
 	}

@@ -7,7 +7,7 @@ class A
 public:
 	A()
 	{
-
+		cout << "this is  A" << endl;
 	}
 	~A()
 	{
@@ -19,6 +19,7 @@ class B
 public:
 	B()
 	{
+		cout << "this is  B" << endl;
 
 	}
 	~B()
@@ -32,6 +33,7 @@ public:
 
 	C()
 	{
+		cout << "this is  C" << endl;
 
 	}
 	~C()
@@ -44,7 +46,8 @@ class D
 public:
 	D()
 	{
-
+	
+		cout << "this is  D" << endl;
 	}
 	~D()
 	{
@@ -62,5 +65,5 @@ int main()
 	B b;
 	
 	static D d;
-	delete pa;
+	delete pa;		//此处delete将调用A的析构函数
 }

@@ -3,6 +3,8 @@
 #include <stdlib.h>
 struct Stu{
 	//char name[20];
+	//指针只指向地址而不分配内存 所以要使用的话要先分配到内存
+	//
 	char *name;
 	int age;
 }stu, *pstu;

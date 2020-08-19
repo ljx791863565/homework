@@ -74,9 +74,22 @@
 #define BUFSIZE 1024	//缓存数据的大小
 #define LISTENQ 1024	
 #define MAXLINE 4096
-#define SERVER_PORT 8888
+#define SERVER_PORT 8189
 
 typedef void Sigfunc(int);		//signal handlers
+
+typedef struct MSGHEAD
+{
+	int len;	//消息长度
+	int msgtype; //消息类型
+	int result_type;	//返回消息类型
+} MSGHEAD_T;
+
+typedef struct MSG
+{
+	int fd;
+	char buf[BUFSIZE];
+} MSG_T;
 
 #define max(a,b) ((a) < (b) ? (a) : (b))
 #define min(a,b) ((a) < (b) ? (a) : (b))

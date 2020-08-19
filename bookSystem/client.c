@@ -1,5 +1,6 @@
 #include "unp.h"
 #include "threadpool.h"
+static int regi_status = 0;
 
 void *handler(void *arg)
 {
@@ -12,8 +13,28 @@ void *handler(void *arg)
 		if (ret <= 0) {
 			continue;
 		}
+		MSGHEAD_T msghead;
+		bzero(&msghead, 0);
+		memcpy(&msghead, buf, sizeof(msghead));
+
+		msghead.len = ntohl(msghead.len);
+		msghead.msgtype = ntohl(msghead.msgtype);
+		msghead.result_type = ntohl(msghead.result_type);
+
+		switch (msghead.msgtype)
+		{
+			case 2:
+				{
+					if (msghead.result_type == 0) {
+						err_msg("user register ok");
+						regi_status = 1;	//注册成功标志
+					}else if (msghead.result_type == 1) {
+						err_msg("user register fail");
+						regi_status = 0
+					}
+				}
+		}
 		err_msg("server to client :%s", buf);
-		printf("server to client :%s", buf);
 	}
 }
 
@@ -21,7 +42,6 @@ int main(int argc, const char *argv[])
 {
 	if (argc != 2) {
 		err_sys("usage : ./cli address");
-		printf("usage : ./cli address");
 	}
 	
 	int sockfd;
@@ -32,7 +52,7 @@ int main(int argc, const char *argv[])
 
 	serverAddr.sin_family = AF_INET;
 	serverAddr.sin_port = htons(SERVER_PORT);
-	serverAddr.sin_addr.s_addr = inet_addr(argv[1]);
+	inet_aton(argv[1], &serverAddr.sin_addr);
 
 	Connect(sockfd, (struct sockaddr*)&serverAddr, sizeof(serverAddr));
 
@@ -40,20 +60,17 @@ int main(int argc, const char *argv[])
 	int ret = pthread_create(&pid, NULL, handler, &sockfd);
 	if (ret < 0) {
 		err_sys("pthread_create error");
-		perror("pthread_create error");
 	}
 
 	char buf[BUFSIZE];
-	printf("this 2");
 	while (1) {
-		printf("this 1");
 		bzero(buf, 0);
 		ret = read(0, buf, BUFSIZE);
 		if (ret <= 0) {
 			continue;
 		}
+		ret = write(sockfd, buf, ret);
 		err_msg("client to server :%s", buf);
-		printf("client to server :%s", buf);
 	}
 
 	close(sockfd);
