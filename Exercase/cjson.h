@@ -78,8 +78,8 @@ CJSON_PUBLIC(void) cJSON_Delete(cJSON *item);
 
 CJSON_PUBLIC(int) cJSON_GetArraySize(cJSON *array);
 CJSON_PUBLIC(cJSON *) cJSON_GerArrayItem(const cJSON *array, int index);
-CJSON_PUBLIC(cJSON *) cJSON_GetPbjectItem(const cJSON * const object, const char * const string);
-CJSON_PUBLIC(cJSON *) cJSON_GetPbjectItemCaseSensitive(const cJSON * const object, 
+CJSON_PUBLIC(cJSON *) cJSON_GetObjectItem(const cJSON * const object, const char * const string);
+CJSON_PUBLIC(cJSON *) cJSON_GetObjectItemCaseSensitive(const cJSON * const object, 
 		const char * const string);
 CJSON_PUBLIC(cJSON_bool) cJSON_HasObjectItem(const cJSON *object, const char *string);
 CJSON_PUBLIC(const char *) cJSON_GetErrorPtr(void);

@@ -308,7 +308,7 @@ sds sdscpy(sds s, const char *t)
 	return sdscpylen(s, t, strlen(t));
 }
 
-//打印函数
+//底层格式化追加到s函数
 sds sdscatvprintf(sds s, const char *fmt, va_list ap)
 {
 	va_list cpy;
@@ -322,6 +322,8 @@ sds sdscatvprintf(sds s, const char *fmt, va_list ap)
 
 		buf[buflen -2] = '\0';
 		va_copy(cpy, ap);
+		//这里将cpy参数格式化16个字符到buf中
+		//如果大于14位 即\0被覆盖 重新申请buflen*2空间
 		vsnprintf(buf, buflen, fmt, cpy);
 		if (buf[buflen - 2] != '\0'){
 			zfree(buf);
@@ -391,7 +393,7 @@ sds sdstrim(sds s, const char *cest)
 	return s;
 }
 
-//
+//取s的start到end范围的字符
 sds sdsrange(sds s, int start, int end)
 {
 	struct sdshdr *sh = (void *)(s - (sizeof(struct sdshdr)));
@@ -401,6 +403,7 @@ sds sdsrange(sds s, int start, int end)
 	if (len == 0) {
 		return s;
 	}
+	//如果start/end为负数 表示从右向左移动-srart/-end长度 否则为0
 	if (start < 0) {
 		start = len +start;
 		if (start < 0){

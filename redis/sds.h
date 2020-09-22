@@ -11,7 +11,27 @@
  * 对比c字符串
  * sds可以高效执行长度计算 (strlen)
  * sds可以高效执行追加操作 (append)
- * 二进制安全 ？
+ * 二进制安全 ？ binary-safe
+ *		只关心二进制化的字符串,不关心具体格式.只会严格的按照二进制的数据存取。不会妄图已某种特殊格式解析数据
+ *
+ *		这里的二进制安全是指c风格字符串是以'\0'结尾的 当程序顺序读取到'\0'即表示数据读取完成 字符串里不能有别的空字符  
+ *		所以c风格字符串只能用于保存文本数据而不能保存图片视频音频压缩文件等二进制数据
+ *		sds将对所有的数据采用二进制方式处理 不对其数据做任何限制过滤或假设 数据存入是什么样读取就是什么样
+ *		sds采用len属性来保证写入和读取的数据的结束 不采用c风格的空字符为结束标志 
+ *		所以其二进制安全
+ *		SDS 数据结构如下
+ *
+ *		sdshdr test:
+ *		-----------------
+ *int	|free	|	0	|
+ *		|------	|-------|	
+ *int	|len	|	13	|
+ *		|-------|-------|		--------------------------------------------------------
+ *cha[]	|buf	|		| -->   | r	| e	| d	| i	| s	| \0| c	| l	| u	| s	| t | e	| r	| \0|
+ *		|---------------		--------------------------------------------------------
+ *							
+ *		总共占用13个bit用len标志 剩余可用空间0bit用free标志 数据保存在buf的首地址开始的13bit内存中
+ *
  * 追加操作时加快操作速度 降低内存分配次数 代价就是占有了更多的内存 并且这些内存不会被主动释放
  */
 
@@ -62,13 +82,17 @@ struct sdshdr{
 //返回 sds buf的已占用长度
 //static inline 函数直接在.h文件中定义 只在被引用代码中可见
 //引用此.h也不会造成重复定义
+
+
+// 定义二进制安全的strlen-like函数 传入一个sds对象 返回其中数据buf已占用的长度
 static inline size_t sdslen(const sds s)
 {
+	//利用一个没有数据的空sds长度 (sizeof=8)来判断
 	struct sdshdr *sh = (void*)(s - (sizeof(struct sdshdr)));
 	return sh->len;
 }
 
-//返回sds 的buf 可用长度
+// 返回sds 的buf 可用长度
 static inline size_t sdsavail(const sds s)
 {
 	struct sdshdr *sh = (void *)(s - (sizeof(struct sdshdr)));
@@ -83,19 +107,19 @@ sds sdsempty();												//创建一个只包含空白字符串""的sds O(N)
 size_t sdslen(const sds s);									//返回给定sds的长度 O(1)
 sds sdsdup(const sds s);									//创建一个sds副本 O(N)
 void sdsfree(sds s);										//释放给定sds O(N)
-size_t sdsavail(const sds s);
+size_t sdsavail(const sds s);								//返回一个sds剩余可用长度 O(1)
 sds sdsgrowzero(sds s, size_t len);							//将sds的buf扩展到指定长度 无内容内存用\0填充 O(N)
-sds sdscatlen(sds s, const void *t, size_t len);			//对sds的buf按给定长度扩展 并将给定字符串追加到末尾 O(N)
+sds sdscatlen(sds s, const void *t, size_t len);			//对sds的buf按给定长度扩展 并将给定字符串追加到末尾 如果给定字符串t长度大于len 只追加len长度其余截断 如果给定字符串t长度小于len 多余的长度补'\0' O(N)
 sds sdscat(sds s, const char *t);							//将一个字符串追加到sds末尾 O(N)
 sds sdscatsds(sds s, const sds t);							//将一个sds (t) 追加到sds (s) 末尾 O(N)
-sds sdscpylen(sds s, const char *t, size_t len);			//将一个字符串的部分内容复制到sds中 需要时要对sds进行扩展 O(N)
+sds sdscpylen(sds s, const char *t, size_t len);			//将一个字符串的内容按长度len复制到sds中 需要时要对sds进行扩展 O(N)
 sds sdscpy(sds s, const char *t);							//将一个c字符串复制到sds O(N)
 void sdsupdatelen(sds s);									//更新给定sds对应sdshdr结构的free和len属性 O(1)
 void sdsclear(sds s);										//清除给定sds内容 初始化为"" O(1)
 /* --------------------------------------------------------------------------------------- */
 
 /* ----------------------------基本字符串API的sds版本------------------------------------- */
-sds sdscatvprintf(sds s, const char *fmt, va_list ap);		//字符串格式化输出
+sds sdscatvprintf(sds s, const char *fmt, va_list ap);		//底层字符串格式化输出函数
 sds sdscatprintf(sds s, const char *fmt, ...);				//字符串格式化输入 类似sprintf
 sds sdstrim(sds s, const char *cast);						//字符串trim
 sds sdsrange(sds s, int start, int end);					//字符串截取

@@ -93,8 +93,10 @@ typedef struct cJSON
     /* The item's string, if type==cJSON_String  and type == cJSON_Raw */
     char *valuestring;
     /* writing to valueint is DEPRECATED, use cJSON_SetNumberValue instead */
+	//type为cJSON_Number时int的值，或是double被截断为int的值
     int valueint;
     /* The item's number, if type==cJSON_Number */
+	// type为cJSON_Number时double的值
     double valuedouble;
 
     /* The item's name string, if this item is the child of, or is in the list of subitems of an object. */

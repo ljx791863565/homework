@@ -635,9 +635,65 @@ CJSON_PUBLIC(void) cJSON_Delete(cJSON *item)
 	}
 }
 
-CJSON_PUBLIC(int) cJSON_GetArraySize(cJSON *array);
-CJSON_PUBLIC(cJSON *) cJSON_GerArrayItem(const cJSON *array, int index);
-CJSON_PUBLIC(cJSON *) cJSON_GetPbjectItem(const cJSON * const object, const char * const string);
+//获取到数组的长度
+CJSON_PUBLIC(int) cJSON_GetArraySize(cJSON *array)
+{
+	cJSON *child = NULL;
+	size_t size = 0;
+	if (array == NULL) {
+		return 0;
+	}
+	child = array->child;
+	while (child != NULL) {
+		size++;
+		child = child->next;
+	}
+	return size;
+}
+static cJSON* get_array_item(const cJSON *array, size_t index)
+{
+	cJSON *current_child = NULL;
+	if (array == NULL) {
+		return NULL;
+	}
+	while ((current_child != NULL) && (index > 0)) {
+		index--;
+		current_child = current_child->index;
+	}
+	return current_child;
+	
+}
+//获取给定array的第index个节点
+CJSON_PUBLIC(cJSON *) cJSON_GerArrayItem(const cJSON *array, int index)
+{
+	if (index < 0) {
+		return NULL;
+	}
+	return get_array_item(array, (size_t)index);
+}
+
+static cJSON *get_object_item(const cJSON *const object, const char * const name, const cJSON_bool case_sensitive)
+{
+	cJSON *current_element = NULL;
+	if ((object == NULL) || (name == NULL)) {
+		return NULL;
+	}
+	current_element = object->child;
+	if (case_sensitive) {
+		while ((current_element != NULL) && (current_element->string != NULL) && (strcmp(name, current_element->string) != 0)) {
+			current_element = current_element->next;
+		}
+	}else {
+		while ((current_element != NULL) && (case_insensitive_strcmp)) {
+		
+		}
+	}
+}
+CJSON_PUBLIC(cJSON *) cJSON_GetObjectItem(const cJSON * const object, const char * const string)
+{
+	
+}
+
 CJSON_PUBLIC(cJSON *) cJSON_GetPbjectItemCaseSensitive(const cJSON * const object, 
 		const char * const string);
 CJSON_PUBLIC(cJSON_bool) cJSON_HasObjectItem(const cJSON *object, const char *string);

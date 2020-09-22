@@ -2,8 +2,9 @@
 #include <stdlib.h>
 #include <stddef.h>
 //已经使用的内存,zmalloc增加 zfree减少 
+//真实记录内存的占有大小
 static size_t used_memory = 0;
-static int zmalloc_thread_safe = 0;			//线程安全标志 
+static int zmalloc_thread_safe = 0;			//线程安全标志  1：不安全 0：安全
 
 #include <pthread.h>
 pthread_mutex_t used_memory_mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -31,6 +32,7 @@ void zlibc_free(void *ptr)
 }while(0)
 
 //分配的空间是8的整数倍，如果不是，补齐
+//zmalloc_thread_safe=1时线程不安全 调用thread_mutex来保证资源被安全使用
 #define update_zmalloc_stat_alloc(__n) do {	\
 	size_t _n = (__n); \
 	if (_n&(sizeof(long)-1)) \
@@ -109,15 +111,19 @@ void *zrealloc(void *ptr, size_t size)
 	size_t oldsize;
 	void *newptr;
 
+	//对于realloc 传入的指针为NULL 直接调用malloc
 	if (ptr == NULL)
 		return zmalloc(size);
 
+	//将指针移到头位置
 	realptr = (char *)ptr - PREFIX_SIZE;
 	oldsize = *((size_t*)realptr);
 	newptr = realloc(realptr, size + PREFIX_SIZE);
 	if (!newptr)
 		zmalloc_oom_handler(size);
-	
+
+	*((size_t *)newptr) = size;
+
 	update_zmalloc_stat_free(oldsize);
 	update_zmalloc_stat_alloc(size);
 	return (char *)newptr + PREFIX_SIZE;
@@ -129,6 +135,7 @@ size_t zmalloc_size(void *ptr)
 	//回到malloc申请内存的开始位置
 	void *realptr = (char *)ptr - PREFIX_SIZE;
 	size_t size = *((size_t*)realptr);
+	//此处做size_t大小字节对齐 如果不对齐 补齐
 	if (size&(sizeof(long) -1))
 		size += sizeof(long) - (size&(sizeof(long) -1));
 
@@ -198,6 +205,8 @@ void zmalloc_set_omm_handler(void (*omm_handler)(size_t))
 size_t zmalloc_get_rss()
 {
 	//查询内存页大小
+	//sys\unistd.h 
+	//#define _SC_PAGESIZE                      8
 	int page = sysconf(_SC_PAGESIZE);
 	size_t rss;
 	char buf[4096];

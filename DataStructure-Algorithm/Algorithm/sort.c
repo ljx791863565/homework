@@ -1,8 +1,11 @@
 #include <stdio.h>
 #include <time.h>
 #include <stdlib.h>
+
+#define N 100000
 clock_t start, stop;
 double duration;
+
 void show(int *arr, int n)
 {
 	for (int i=0; i<n; ++i){
@@ -40,9 +43,11 @@ void BubbleSort(int *arr, int n)
 }
 
 //桶排序
+//适用于数值范围不大分布密集的情况 当遍历比较浪费时间 直接利用空间换取时间
 void BucketSort(int *arr, int n)
 {
 	int max = arr[0];
+	
 	for (int i=1; i<n; ++i){
 		if (arr[i] > max){
 			max = arr[i];	//找出需要最大的空间
@@ -87,6 +92,41 @@ void QuickSort(int *arr, int low, int high)
 	arr[low] = mid;
 	return ;
 }
+
+static void merge_core(int *arr, int begin, int mid, int end)
+{
+	int i = begin, j = mid, k = 0;
+	int *tmp = (int *)malloc(sizeof(int) * (end - begin));
+	while (i < mid && j < end)
+		tmp[k++] = (arr[i] < arr [j] ? arr[i++] : arr[j++]);
+	while (i < mid)
+		tmp[k++] = arr[i++];
+	while (j < end) 
+		tmp[k++] = arr[j++];
+	for (i=begin, k = 0; i < end; arr[i++] = tmp[k++]);
+
+	free(tmp);
+}
+
+//merge sort
+//begin为数组开始下标
+//end为数组结束下标
+//采用分治法将排序数组分为两个数组分别排序
+//并将两个有序数组合并为一个数组
+//O(nlogn)
+//空间上需要分配n大小空间
+void MergeSort(int *arr, int begin, int end)
+{
+	//这里表示分治为最小两个元素的数组
+	if (end - begin <2) {
+		return;
+	}
+	int mid = (begin + end) / 2;
+	MergeSort(arr, begin, mid);
+	MergeSort(arr, mid, end);
+	merge_core(arr, begin, mid, end);
+}
+
 
 /*
 //递归的快速排序
@@ -146,7 +186,8 @@ int main()
 	printf("after sotr: \n");
 	start = clock();
 //	InsertionSort(arr, n);
-	ShellSort(arr, n);
+//	ShellSort(arr, n);
+	MergeSort(arr,0, n);
 	stop = clock();
 	show(arr,n);
 	duration = ((double)(stop - start)) /CLOCKS_PER_SEC;
