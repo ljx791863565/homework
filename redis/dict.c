@@ -102,6 +102,7 @@ unsigned int dictGenHashFunction(const void *key, int len)
 }
 
 //不分大小写
+//DJB Hash
 unsigned int dictGenCaseHashFunction(const unsigned char *buf, int len)
 {
 	unsigned int hash = (unsigned int)dict_hash_function_seed;

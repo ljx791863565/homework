@@ -349,12 +349,12 @@ sds sdscatprintf(sds s, const char *fmt, ...)
 	return t;
 }
 
-//sds中头尾删除给定的字符串 cest字符串
+//sds中删除所有在cest中出现的字符
 //比如 sds串为 "hello worldhe\0" cest串为 "he"
 //删除后结果为 "llo world\0"
 //len 原先是13 删除后是9
 //free 假设原先是10 删除后是14 少了4个字符所以多了4个free
-//O(N)
+//O(N^2)
 sds sdstrim(sds s, const char *cest)
 {
 	struct sdshdr *sh = (void *)(s - (sizeof(struct sdshdr)));
