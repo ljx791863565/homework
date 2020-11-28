@@ -6,6 +6,12 @@
 
 #include "debug.h"
 
+/*
+ * filename: __FILE__
+ * line: __LINE__
+ * level: debug级别
+ * format: 打印格式
+ */
 void _debug(const char *filename, int line, int level, const char *format, ...)
 {
 	char buf[28];
