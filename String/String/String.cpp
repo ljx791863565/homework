@@ -12,7 +12,7 @@ String::String(const char *str){
     _str=new char[maxLength+1];
     if(!_str)
     {
-        cerr<<"Allocation Error!\n";
+		std::cerr<<"Allocation Error!\n";
         exit(1);
     }
     _len=strlen(str);
@@ -28,7 +28,7 @@ String::String(const String &obj){
     _str=new char[maxLength+1];
     if(!_str)
     {
-        cerr<<"Allocation Error!\n";
+		std::cerr<<"Allocation Error!\n";
         exit(1);
     }
     _len=obj._len;
@@ -39,7 +39,7 @@ String &String::operator=(const String &obj){
     _str=new char[maxLength+1];
     if(!_str)
     {
-        cerr<<"Allocation Error!\n";
+		std::cerr<<"Allocation Error!\n";
         exit(1);
     }
     _len=obj._len;
@@ -53,7 +53,7 @@ String &String::operator+=(const String &obj){
     _str=new char[_len+1];
     if(!_str)
     {
-        cerr<<"Out of memory!\n";
+		std::cerr<<"Out of memory!\n";
         exit(1);
     }
     strcpy(_str,temp);
@@ -67,7 +67,7 @@ String operator+(const String &obj,const String &obj1){
     char *str0=new char[len+1];
     if(!str0)
     {
-        cerr<<"Out of memory!\n";
+		std::cerr<<"Out of memory!\n";
         exit(1);
     }
     strcpy(str0,obj._str);
@@ -97,12 +97,12 @@ char String::operator[](int index){
     return _str[index];
 }
 //<<运算符重载
-ostream &operator<<(ostream &os,const String &obj){
+std::ostream &operator<<(std::ostream &os,const String &obj){
     os<<obj._str;
     return os;
 }
 //>>运算符重载
-istream &operator>>(istream &is,const String &obj){
+std::istream &operator>>(std::istream &is,const String &obj){
     is>>obj._str;
     return is;
 }

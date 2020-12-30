@@ -1,6 +1,7 @@
 #ifndef String_String_h
 #define String_String_h
-using namespace std;
+#include <string.h>
+
 class String{
 public:
     //默认构造函数
@@ -25,9 +26,9 @@ public:
     //[]下标运算符重载
     char operator[](int index);
     //<<运算符重载
-    friend ostream &operator<<(ostream &os,const String &obj);
+    friend std::ostream &operator<<(std::ostream &os,const String &obj);
     //>>运算符重载
-    friend istream &operator>>(istream &is,const String &obj);    
+    friend std::istream &operator>>(std::istream &is,const String &obj);    
     //返回字符串长度
     int leng()const;
     //取从position所指位置连续取len个字符组成子串返回
